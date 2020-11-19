@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'designexam',
+    'answerexam',
+    'result',
 ]
 
 MIDDLEWARE = [
