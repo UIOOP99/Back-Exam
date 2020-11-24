@@ -14,8 +14,8 @@ class Exam(models.Model):  # Teachers
     file_URL = models.URLField(default=None)
     setting = models.BooleanField(default=True)  # True for FIX questions and False for RANDOM questions
     created_date = models.DateTimeField(auto_now_add=True, blank=False)
-    author_choices = (('PROFESSOR', 1), )
-    author = models.IntegerField(choices=author_choices, null=False)
+    author_choices = (('PROFESSOR', 1), ('ADMIN', 2), )
+    author = models.IntegerField(choices=author_choices)
 
 
 class DescriptiveQuestion(models.Model):  # Teachers

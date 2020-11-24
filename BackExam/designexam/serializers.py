@@ -4,19 +4,17 @@ from .models import Exam
 
 
 class ExamSerializer(serializers.ModelSerializer):
+    questions_file = serializers.FileField(write_only=True, allow_null=True)
 
     class Meta:
         model = Exam
         fields = "__all__"
         read_only_fields = ('author', 'file_URL', 'have_file')
 
-    def __init__(self, author):
-        self.author = author
-        super().__init__()
-
     def validate_start_date(self, value):
         if value > datetime.datetime.now():
             return value
+        #check confilict
         raise serializers.ValidationError('start date must be less than now')
 
     def validate_end_date(self, value):
@@ -26,7 +24,7 @@ class ExamSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('the format of time is invalid')
         if value > datetime.datetime.now() and value > start_time:
             return value
-
+        #check confilict
         raise serializers.ValidationError('end date must be less than start time')
 
     def validate_duration(self, value):
@@ -42,8 +40,13 @@ class ExamSerializer(serializers.ModelSerializer):
         
         raise serializers.ValidationError('start_time + duration is not less than end_time')
 
-    def create(self, validated_data):
-        exam = super().create(validated_data)
-        exam.author = self.author
-        exam.save()
-        return exam
+    def validate_questions_file(self, value):
+        file = value
+        if file.content_type not in ['application/pdf']:
+            raise serializers.ValidationError("the format is invalid")
+        return file
+
+    
+
+
+    
