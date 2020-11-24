@@ -5,15 +5,17 @@ from django.db import models
 
 class Exam(models.Model):  # Teachers
     title = models.CharField(max_length=200, blank=False, default='')
-    courseID = models.CharField(max_length=200)
+    courseID = models.CharField(max_length=200, null=False)
     description = models.TextField()
-    start_date = models.DateTimeField()
-    duration = models.PositiveIntegerField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=False)
+    duration = models.PositiveIntegerField(null=False)
+    end_date = models.DateTimeField(null=False)
     have_file = models.BooleanField(default=False)  # Have a file containing all the questions
     file_URL = models.URLField(default=None)
     setting = models.BooleanField(default=True)  # True for FIX questions and False for RANDOM questions
     created_date = models.DateTimeField(auto_now_add=True, blank=False)
+    author_choices = (('PROFESSOR', 1), )
+    author = models.IntegerField(choices=author_choices, null=False)
 
 
 class DescriptiveQuestion(models.Model):  # Teachers
