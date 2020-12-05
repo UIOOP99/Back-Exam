@@ -8,7 +8,7 @@ class Exam(models.Model):  # Teachers
     courseID = models.CharField(max_length=200, null=False)
     description = models.TextField()
     start_date = models.DateTimeField(null=False)
-    duration = models.PositiveIntegerField(null=False)
+    duration = models.PositiveIntegerField()
     end_date = models.DateTimeField(null=False)
     have_file = models.BooleanField(default=False)  # Have a file containing all the questions
     file_URL = models.URLField(default=None)
