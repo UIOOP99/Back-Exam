@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+service FileController {
+    rpc CreateFile(File) returns (CreateResponse) {}
+    rpc DestroyFile(FileURL) returns (google.protobuf.Empty) {}
+}
+
+message File {
+    bytes content = 1;
+}
+
+enum Status {
+    ok = 0;
+    failed = 1;
+}
+
+message CreateResponse {
+    string url_error = 1;
+    Status status = 2;
+}
+
+message FileURL{
+    string url=1;
+}
