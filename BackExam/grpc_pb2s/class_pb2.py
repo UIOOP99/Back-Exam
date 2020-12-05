@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\x05\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x32\x46\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\x05\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\"&\n\x12\x43lassCommenRequest\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\x05\x32\x89\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x41\n\x10GetCommenClasses\x12\x19.class.ClassCommenRequest\x1a\x10.class.ClassList\"\x00\x62\x06proto3'
 )
 
 
@@ -88,8 +88,41 @@ _CLASSLISTREQUEST = _descriptor.Descriptor(
   serialized_end=88,
 )
 
+
+_CLASSCOMMENREQUEST = _descriptor.Descriptor(
+  name='ClassCommenRequest',
+  full_name='class.ClassCommenRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='class_id', full_name='class.ClassCommenRequest.class_id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=90,
+  serialized_end=128,
+)
+
 DESCRIPTOR.message_types_by_name['ClassList'] = _CLASSLIST
 DESCRIPTOR.message_types_by_name['ClassListRequest'] = _CLASSLISTREQUEST
+DESCRIPTOR.message_types_by_name['ClassCommenRequest'] = _CLASSCOMMENREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ClassList = _reflection.GeneratedProtocolMessageType('ClassList', (_message.Message,), {
@@ -106,6 +139,13 @@ ClassListRequest = _reflection.GeneratedProtocolMessageType('ClassListRequest', 
   })
 _sym_db.RegisterMessage(ClassListRequest)
 
+ClassCommenRequest = _reflection.GeneratedProtocolMessageType('ClassCommenRequest', (_message.Message,), {
+  'DESCRIPTOR' : _CLASSCOMMENREQUEST,
+  '__module__' : 'class_pb2'
+  # @@protoc_insertion_point(class_scope:class.ClassCommenRequest)
+  })
+_sym_db.RegisterMessage(ClassCommenRequest)
+
 
 
 _CLASSCONTROLLER = _descriptor.ServiceDescriptor(
@@ -115,8 +155,8 @@ _CLASSCONTROLLER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=90,
-  serialized_end=160,
+  serialized_start=131,
+  serialized_end=268,
   methods=[
   _descriptor.MethodDescriptor(
     name='List',
@@ -124,6 +164,16 @@ _CLASSCONTROLLER = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_CLASSLISTREQUEST,
+    output_type=_CLASSLIST,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetCommenClasses',
+    full_name='class.ClassController.GetCommenClasses',
+    index=1,
+    containing_service=None,
+    input_type=_CLASSCOMMENREQUEST,
     output_type=_CLASSLIST,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

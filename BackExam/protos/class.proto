@@ -4,6 +4,7 @@ package class;
 
 service ClassController {
     rpc List(ClassListRequest) returns (ClassList) {}
+    rpc GetCommenClasses(ClassCommenRequest) returns (ClassList) {}
 }
 
 message ClassList {
@@ -12,4 +13,8 @@ message ClassList {
 
 message ClassListRequest {
     int32 user_id = 1;
+}
+
+message ClassCommenRequest{
+    int32 class_id = 1;
 }

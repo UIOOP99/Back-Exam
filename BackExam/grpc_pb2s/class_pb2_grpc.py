@@ -19,6 +19,11 @@ class ClassControllerStub(object):
                 request_serializer=class__pb2.ClassListRequest.SerializeToString,
                 response_deserializer=class__pb2.ClassList.FromString,
                 )
+        self.GetCommenClasses = channel.unary_unary(
+                '/class.ClassController/GetCommenClasses',
+                request_serializer=class__pb2.ClassCommenRequest.SerializeToString,
+                response_deserializer=class__pb2.ClassList.FromString,
+                )
 
 
 class ClassControllerServicer(object):
@@ -30,12 +35,23 @@ class ClassControllerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetCommenClasses(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ClassControllerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'List': grpc.unary_unary_rpc_method_handler(
                     servicer.List,
                     request_deserializer=class__pb2.ClassListRequest.FromString,
+                    response_serializer=class__pb2.ClassList.SerializeToString,
+            ),
+            'GetCommenClasses': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetCommenClasses,
+                    request_deserializer=class__pb2.ClassCommenRequest.FromString,
                     response_serializer=class__pb2.ClassList.SerializeToString,
             ),
     }
@@ -61,6 +77,23 @@ class ClassController(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/class.ClassController/List',
             class__pb2.ClassListRequest.SerializeToString,
+            class__pb2.ClassList.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetCommenClasses(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/class.ClassController/GetCommenClasses',
+            class__pb2.ClassCommenRequest.SerializeToString,
             class__pb2.ClassList.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
