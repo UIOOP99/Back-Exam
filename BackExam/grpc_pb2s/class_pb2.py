@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\t\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x04\"&\n\x12\x43lassCommenRequest\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\t2\x89\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x41\n\x10GetCommenClasses\x12\x19.class.ClassCommenRequest\x1a\x10.class.ClassList\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\t\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x04\"\x1b\n\x07\x43lassId\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\t\"#\n\x0fIsExistResponse\x12\x10\n\x08is_exist\x18\x01 \x01(\x08\x32\xb3\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x36\n\x10GetCommenClasses\x12\x0e.class.ClassId\x1a\x10.class.ClassList\"\x00\x12\x33\n\x07IsExist\x12\x0e.class.ClassId\x1a\x16.class.IsExistResponse\"\x00\x62\x06proto3'
 )
 
 
@@ -89,16 +89,16 @@ _CLASSLISTREQUEST = _descriptor.Descriptor(
 )
 
 
-_CLASSCOMMENREQUEST = _descriptor.Descriptor(
-  name='ClassCommenRequest',
-  full_name='class.ClassCommenRequest',
+_CLASSID = _descriptor.Descriptor(
+  name='ClassId',
+  full_name='class.ClassId',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='class_id', full_name='class.ClassCommenRequest.class_id', index=0,
+      name='class_id', full_name='class.ClassId.class_id', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -117,12 +117,45 @@ _CLASSCOMMENREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=90,
-  serialized_end=128,
+  serialized_end=117,
+)
+
+
+_ISEXISTRESPONSE = _descriptor.Descriptor(
+  name='IsExistResponse',
+  full_name='class.IsExistResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='is_exist', full_name='class.IsExistResponse.is_exist', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=119,
+  serialized_end=154,
 )
 
 DESCRIPTOR.message_types_by_name['ClassList'] = _CLASSLIST
 DESCRIPTOR.message_types_by_name['ClassListRequest'] = _CLASSLISTREQUEST
-DESCRIPTOR.message_types_by_name['ClassCommenRequest'] = _CLASSCOMMENREQUEST
+DESCRIPTOR.message_types_by_name['ClassId'] = _CLASSID
+DESCRIPTOR.message_types_by_name['IsExistResponse'] = _ISEXISTRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ClassList = _reflection.GeneratedProtocolMessageType('ClassList', (_message.Message,), {
@@ -139,12 +172,19 @@ ClassListRequest = _reflection.GeneratedProtocolMessageType('ClassListRequest', 
   })
 _sym_db.RegisterMessage(ClassListRequest)
 
-ClassCommenRequest = _reflection.GeneratedProtocolMessageType('ClassCommenRequest', (_message.Message,), {
-  'DESCRIPTOR' : _CLASSCOMMENREQUEST,
+ClassId = _reflection.GeneratedProtocolMessageType('ClassId', (_message.Message,), {
+  'DESCRIPTOR' : _CLASSID,
   '__module__' : 'class_pb2'
-  # @@protoc_insertion_point(class_scope:class.ClassCommenRequest)
+  # @@protoc_insertion_point(class_scope:class.ClassId)
   })
-_sym_db.RegisterMessage(ClassCommenRequest)
+_sym_db.RegisterMessage(ClassId)
+
+IsExistResponse = _reflection.GeneratedProtocolMessageType('IsExistResponse', (_message.Message,), {
+  'DESCRIPTOR' : _ISEXISTRESPONSE,
+  '__module__' : 'class_pb2'
+  # @@protoc_insertion_point(class_scope:class.IsExistResponse)
+  })
+_sym_db.RegisterMessage(IsExistResponse)
 
 
 
@@ -155,8 +195,8 @@ _CLASSCONTROLLER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=131,
-  serialized_end=268,
+  serialized_start=157,
+  serialized_end=336,
   methods=[
   _descriptor.MethodDescriptor(
     name='List',
@@ -173,8 +213,18 @@ _CLASSCONTROLLER = _descriptor.ServiceDescriptor(
     full_name='class.ClassController.GetCommenClasses',
     index=1,
     containing_service=None,
-    input_type=_CLASSCOMMENREQUEST,
+    input_type=_CLASSID,
     output_type=_CLASSLIST,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='IsExist',
+    full_name='class.ClassController.IsExist',
+    index=2,
+    containing_service=None,
+    input_type=_CLASSID,
+    output_type=_ISEXISTRESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

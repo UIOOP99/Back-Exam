@@ -4,7 +4,8 @@ package class;
 
 service ClassController {
     rpc List(ClassListRequest) returns (ClassList) {}
-    rpc GetCommenClasses(ClassCommenRequest) returns (ClassList) {}
+    rpc GetCommenClasses(ClassId) returns (ClassList) {}
+    rpc IsExist(ClassId) returns(IsExistResponse) {}
 }
 
 message ClassList {
@@ -15,6 +16,10 @@ message ClassListRequest {
     uint64 user_id = 1;
 }
 
-message ClassCommenRequest{
+message ClassId{
     string class_id = 1;
+}
+
+message IsExistResponse{
+    bool is_exist = 1;
 }

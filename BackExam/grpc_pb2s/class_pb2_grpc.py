@@ -21,8 +21,13 @@ class ClassControllerStub(object):
                 )
         self.GetCommenClasses = channel.unary_unary(
                 '/class.ClassController/GetCommenClasses',
-                request_serializer=class__pb2.ClassCommenRequest.SerializeToString,
+                request_serializer=class__pb2.ClassId.SerializeToString,
                 response_deserializer=class__pb2.ClassList.FromString,
+                )
+        self.IsExist = channel.unary_unary(
+                '/class.ClassController/IsExist',
+                request_serializer=class__pb2.ClassId.SerializeToString,
+                response_deserializer=class__pb2.IsExistResponse.FromString,
                 )
 
 
@@ -41,6 +46,12 @@ class ClassControllerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def IsExist(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ClassControllerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -51,8 +62,13 @@ def add_ClassControllerServicer_to_server(servicer, server):
             ),
             'GetCommenClasses': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCommenClasses,
-                    request_deserializer=class__pb2.ClassCommenRequest.FromString,
+                    request_deserializer=class__pb2.ClassId.FromString,
                     response_serializer=class__pb2.ClassList.SerializeToString,
+            ),
+            'IsExist': grpc.unary_unary_rpc_method_handler(
+                    servicer.IsExist,
+                    request_deserializer=class__pb2.ClassId.FromString,
+                    response_serializer=class__pb2.IsExistResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -93,7 +109,24 @@ class ClassController(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/class.ClassController/GetCommenClasses',
-            class__pb2.ClassCommenRequest.SerializeToString,
+            class__pb2.ClassId.SerializeToString,
             class__pb2.ClassList.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def IsExist(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/class.ClassController/IsExist',
+            class__pb2.ClassId.SerializeToString,
+            class__pb2.IsExistResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
