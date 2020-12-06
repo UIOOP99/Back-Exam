@@ -1,6 +1,8 @@
 from rest_framework import serializers
 import datetime
 from client_process.file_management import create_file
+from client_process.get_classes import is_exist
+from exam_extra_classes.check_conflict import ExamConflictChecker
 from .models import Exam
 
 
@@ -32,6 +34,7 @@ class ExamFileSerializer(serializers.Serializer):
         self.exam_obj.file_id = response.id
         self.exam_obj.save()
 
+
 class ExamSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -56,18 +59,11 @@ class ExamSerializer(serializers.ModelSerializer):
         #check confilict
         raise serializers.ValidationError('end date must be less than start time')
 
-    # def validate_duration(self, value):
-    #     try:
-    #         start_time = datetime.datetime.strptime(self.initial_data['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
-    #         end_time = datetime.datetime.strptime(self.initial_data['end_date'], format='%Y-%m-%dT%H:%M:%S.%f')
-    #     except:
-    #         raise serializers.ValidationError('the format of datetime id invalid')
-
-    #     start_plus_duration = start_time + datetime.timedelta(minutes=value)
-    #     if start_plus_duration <= end_time:
-    #         return value
-        
-    #     raise serializers.ValidationError('start_time + duration is not less than end_time')
+    def validate_courseId(self, value):
+        if is_exist(value):
+            return value
+        else:
+            return serializers.ValidationError('the course does not exist') 
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
@@ -77,6 +73,22 @@ class ExamSerializer(serializers.ModelSerializer):
             instance.start_time = validated_data.get('start_time', instance.start_time)
         if instance.end_time > datetime.datetime.now():
             instance.end_time = validated_data.get('end_time', instance.end_time)
+
+
+class ExamListSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField('set_status')
+
+    class Meta:
+        model = Exam
+        fields = ('id', 'title', 'courseID', 'start_date', 'end_date', 'status')
+
+    def set_status(self, obj):
+        if datetime.datetime.now() < obj.start_date:
+            return 'not held'
+        elif datetime.datetime.now() > obj.end_date:
+            return 'finished'
+        else:
+            return 'holding'
 
 
 
