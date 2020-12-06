@@ -24,8 +24,9 @@ class ExamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exam
-        fields = "__all__"
-        read_only_fields = ('author', 'file_URL', 'have_file', 'create_date')
+        fields = ('id', 'title', 'courseID', 'description', 'start_date', 'end_date', 'have_file', 'setting',
+                    'created_date', 'author')
+        read_only_fields = ('author', 'have_file', 'create_date')
 
     def validate_start_date(self, value):
         if value > datetime.datetime.now():
@@ -43,18 +44,18 @@ class ExamSerializer(serializers.ModelSerializer):
         #check confilict
         raise serializers.ValidationError('end date must be less than start time')
 
-    def validate_duration(self, value):
-        try:
-            start_time = datetime.datetime.strptime(self.initial_data['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
-            end_time = datetime.datetime.strptime(self.initial_data['end_date'], format='%Y-%m-%dT%H:%M:%S.%f')
-        except:
-            raise serializers.ValidationError('the format of datetime id invalid')
+    # def validate_duration(self, value):
+    #     try:
+    #         start_time = datetime.datetime.strptime(self.initial_data['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
+    #         end_time = datetime.datetime.strptime(self.initial_data['end_date'], format='%Y-%m-%dT%H:%M:%S.%f')
+    #     except:
+    #         raise serializers.ValidationError('the format of datetime id invalid')
 
-        start_plus_duration = start_time + datetime.timedelta(minutes=value)
-        if start_plus_duration <= end_time:
-            return value
+    #     start_plus_duration = start_time + datetime.timedelta(minutes=value)
+    #     if start_plus_duration <= end_time:
+    #         return value
         
-        raise serializers.ValidationError('start_time + duration is not less than end_time')
+    #     raise serializers.ValidationError('start_time + duration is not less than end_time')
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
@@ -62,10 +63,9 @@ class ExamSerializer(serializers.ModelSerializer):
 
         if instance.start_time > datetime.datetime.now():
             instance.start_time = validated_data.get('start_time', instance.start_time)
+        if instance.end_time > datetime.datetime.now():
             instance.end_time = validated_data.get('end_time', instance.end_time)
 
-        if instance.end_time > datetime.datetime.now():
-            instance.duration = validated_data.get('duration', instance.duration)
 
 
     
