@@ -8,13 +8,13 @@ service ClassController {
 }
 
 message ClassList {
-    repeated int32 class_id = 1;    
+    repeated string class_id = 1;    
 }
 
 message ClassListRequest {
-    int32 user_id = 1;
+    uint64 user_id = 1;
 }
 
 message ClassCommenRequest{
-    int32 class_id = 1;
+    string class_id = 1;
 }

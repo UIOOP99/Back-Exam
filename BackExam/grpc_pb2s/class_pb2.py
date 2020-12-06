@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\x05\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\"&\n\x12\x43lassCommenRequest\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\x05\x32\x89\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x41\n\x10GetCommenClasses\x12\x19.class.ClassCommenRequest\x1a\x10.class.ClassList\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\t\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x04\"&\n\x12\x43lassCommenRequest\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\t2\x89\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x41\n\x10GetCommenClasses\x12\x19.class.ClassCommenRequest\x1a\x10.class.ClassList\"\x00\x62\x06proto3'
 )
 
 
@@ -35,7 +35,7 @@ _CLASSLIST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='class_id', full_name='class.ClassList.class_id', index=0,
-      number=1, type=5, cpp_type=1, label=3,
+      number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -67,7 +67,7 @@ _CLASSLISTREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='user_id', full_name='class.ClassListRequest.user_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
+      number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -99,8 +99,8 @@ _CLASSCOMMENREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='class_id', full_name='class.ClassCommenRequest.class_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
