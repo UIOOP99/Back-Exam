@@ -11,7 +11,7 @@ class Exam(models.Model):  # Teachers
     #duration = models.PositiveIntegerField()
     end_date = models.DateTimeField(null=False)
     have_file = models.BooleanField(default=False)  # Have a file containing all the questions
-    file_URL = models.URLField(default=None)
+    file_id = models.PositiveIntegerField(default=None)
     setting = models.BooleanField(default=True)  # True for FIX questions and False for RANDOM questions
     created_date = models.DateTimeField(auto_now_add=True, blank=False)
     author_choices = (('PROFESSOR', 1), ('ADMIN', 2), )

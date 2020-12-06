@@ -1,24 +1,32 @@
 from rest_framework import serializers
 import datetime
+from client_process.file_management import create_file
 from .models import Exam
+
 
 class ExamFileSerializer(serializers.Serializer):
     questions_file = serializers.FileField(write_only=True, allow_null=True)
 
     def __init__(self, Exam_id):
-        self.instance = Exam.objects.get(id = Exam_id)
+        self.exam_obj = Exam.objects.get(id = Exam_id)
 
     def validate_questions_file(self, value):
         file = value
-        if file.content_type not in ['application/pdf']:
+        if file.content_type not in ['application/pdf', ]:
             raise serializers.ValidationError("the format is invalid")
+
+        if file.size > 10485760:
+            raise serializers.ValidationError("the size of file is above of 10 MB")
+        self.file = file
         return file
 
     def save_file(self):
-        pass
+        return create_file(self.file)
 
     def update_instance(self):
-        pass
+        response = self.save_file()
+        self.exam_obj.file_id = response.id
+        self.exam_obj.save()
 
 class ExamSerializer(serializers.ModelSerializer):
 
