@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+service UserController {
+    rpc Create(User) returns (User) {}
+    rpc Update(User) returns (User) {}
+    rpc Destroy(User) returns (google.protobuf.Empty) {}
+}
+
+message User {
+    uint64 id = 1;
+    string role = 2;
+}
