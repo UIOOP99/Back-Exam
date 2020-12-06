@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nfile.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x17\n\x04\x46ile\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\x0c\"<\n\x0e\x43reateResponse\x12\x11\n\turl_error\x18\x01 \x01(\t\x12\x17\n\x06status\x18\x02 \x01(\x0e\x32\x07.Status\"\x16\n\x07\x46ileURL\x12\x0b\n\x03url\x18\x01 \x01(\t*\x1c\n\x06Status\x12\x06\n\x02ok\x10\x00\x12\n\n\x06\x66\x61iled\x10\x01\x32k\n\x0e\x46ileController\x12&\n\nCreateFile\x12\x05.File\x1a\x0f.CreateResponse\"\x00\x12\x31\n\x0b\x44\x65stroyFile\x12\x08.FileURL\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\nfile.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x17\n\x04\x46ile\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\x0c\"5\n\x0e\x43reateResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x17\n\x06status\x18\x02 \x01(\x0e\x32\x07.Status\"\x14\n\x06\x46ileId\x12\n\n\x02id\x18\x01 \x01(\x05\"\x16\n\x07\x46ileURL\x12\x0b\n\x03url\x18\x01 \x01(\t*\x1c\n\x06Status\x12\x06\n\x02ok\x10\x00\x12\n\n\x06\x66\x61iled\x10\x01\x32\x8f\x01\n\x0e\x46ileController\x12&\n\nCreateFile\x12\x05.File\x1a\x0f.CreateResponse\"\x00\x12#\n\x0cRetrieveFile\x12\x07.FileId\x1a\x08.FileURL\"\x00\x12\x30\n\x0b\x44\x65stroyFile\x12\x07.FileId\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -45,8 +45,8 @@ _STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=154,
-  serialized_end=182,
+  serialized_start=169,
+  serialized_end=197,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS)
 
@@ -97,9 +97,9 @@ _CREATERESPONSE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='url_error', full_name='CreateResponse.url_error', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='id', full_name='CreateResponse.id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -123,7 +123,39 @@ _CREATERESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=68,
-  serialized_end=128,
+  serialized_end=121,
+)
+
+
+_FILEID = _descriptor.Descriptor(
+  name='FileId',
+  full_name='FileId',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='FileId.id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=123,
+  serialized_end=143,
 )
 
 
@@ -154,13 +186,14 @@ _FILEURL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=130,
-  serialized_end=152,
+  serialized_start=145,
+  serialized_end=167,
 )
 
 _CREATERESPONSE.fields_by_name['status'].enum_type = _STATUS
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 DESCRIPTOR.message_types_by_name['CreateResponse'] = _CREATERESPONSE
+DESCRIPTOR.message_types_by_name['FileId'] = _FILEID
 DESCRIPTOR.message_types_by_name['FileURL'] = _FILEURL
 DESCRIPTOR.enum_types_by_name['Status'] = _STATUS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -179,6 +212,13 @@ CreateResponse = _reflection.GeneratedProtocolMessageType('CreateResponse', (_me
   })
 _sym_db.RegisterMessage(CreateResponse)
 
+FileId = _reflection.GeneratedProtocolMessageType('FileId', (_message.Message,), {
+  'DESCRIPTOR' : _FILEID,
+  '__module__' : 'file_pb2'
+  # @@protoc_insertion_point(class_scope:FileId)
+  })
+_sym_db.RegisterMessage(FileId)
+
 FileURL = _reflection.GeneratedProtocolMessageType('FileURL', (_message.Message,), {
   'DESCRIPTOR' : _FILEURL,
   '__module__' : 'file_pb2'
@@ -195,8 +235,8 @@ _FILECONTROLLER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=184,
-  serialized_end=291,
+  serialized_start=200,
+  serialized_end=343,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateFile',
@@ -209,11 +249,21 @@ _FILECONTROLLER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='DestroyFile',
-    full_name='FileController.DestroyFile',
+    name='RetrieveFile',
+    full_name='FileController.RetrieveFile',
     index=1,
     containing_service=None,
-    input_type=_FILEURL,
+    input_type=_FILEID,
+    output_type=_FILEURL,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='DestroyFile',
+    full_name='FileController.DestroyFile',
+    index=2,
+    containing_service=None,
+    input_type=_FILEID,
     output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

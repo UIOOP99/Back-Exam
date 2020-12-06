@@ -4,7 +4,8 @@ import "google/protobuf/empty.proto";
 
 service FileController {
     rpc CreateFile(File) returns (CreateResponse) {}
-    rpc DestroyFile(FileURL) returns (google.protobuf.Empty) {}
+    rpc RetrieveFile(FileId) returns (FileURL){}
+    rpc DestroyFile(FileId) returns (google.protobuf.Empty) {}
 }
 
 message File {
@@ -17,8 +18,12 @@ enum Status {
 }
 
 message CreateResponse {
-    string url_error = 1;
+    int32 id = 1;
     Status status = 2;
+}
+
+message FileId{
+    int32 id = 1;
 }
 
 message FileURL{

@@ -20,9 +20,14 @@ class FileControllerStub(object):
                 request_serializer=file__pb2.File.SerializeToString,
                 response_deserializer=file__pb2.CreateResponse.FromString,
                 )
+        self.RetrieveFile = channel.unary_unary(
+                '/FileController/RetrieveFile',
+                request_serializer=file__pb2.FileId.SerializeToString,
+                response_deserializer=file__pb2.FileURL.FromString,
+                )
         self.DestroyFile = channel.unary_unary(
                 '/FileController/DestroyFile',
-                request_serializer=file__pb2.FileURL.SerializeToString,
+                request_serializer=file__pb2.FileId.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
 
@@ -31,6 +36,12 @@ class FileControllerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def CreateFile(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RetrieveFile(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -50,9 +61,14 @@ def add_FileControllerServicer_to_server(servicer, server):
                     request_deserializer=file__pb2.File.FromString,
                     response_serializer=file__pb2.CreateResponse.SerializeToString,
             ),
+            'RetrieveFile': grpc.unary_unary_rpc_method_handler(
+                    servicer.RetrieveFile,
+                    request_deserializer=file__pb2.FileId.FromString,
+                    response_serializer=file__pb2.FileURL.SerializeToString,
+            ),
             'DestroyFile': grpc.unary_unary_rpc_method_handler(
                     servicer.DestroyFile,
-                    request_deserializer=file__pb2.FileURL.FromString,
+                    request_deserializer=file__pb2.FileId.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
@@ -83,6 +99,23 @@ class FileController(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def RetrieveFile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/FileController/RetrieveFile',
+            file__pb2.FileId.SerializeToString,
+            file__pb2.FileURL.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def DestroyFile(request,
             target,
             options=(),
@@ -94,7 +127,7 @@ class FileController(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/FileController/DestroyFile',
-            file__pb2.FileURL.SerializeToString,
+            file__pb2.FileId.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
