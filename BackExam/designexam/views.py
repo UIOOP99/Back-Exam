@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,13 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
 from .models import Exam
-from .serializers import ExamSerializer
-
-
-@api_view(['GET',])
-@permission_classes((IsAuthenticated))
-def get_classes(request):
-    pass
+from .serializers import ExamSerializer, ExamFileSerializer
+from client_process.file_management import delete_file, retrieve_file
 
 
 class ExamViewSet(ModelViewSet):
@@ -21,9 +16,6 @@ class ExamViewSet(ModelViewSet):
     serializer_class = ExamSerializer
     http_method_names = ['get', 'delete', 'patch', 'post']
     permission_classes = [IsAuthenticated, ]
-
-    def list(self, request, *args, **kwargs):
-        pass
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -39,11 +31,42 @@ class ExamViewSet(ModelViewSet):
             serializer.author = 1
         serializer.save()
 
-    def partial_update(self, request, *args, **kwargs):
-        pass
-
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    @action(detail=True, methods=['post'])
+    def create_file(self, request, pk):
+        try:
+            exam = Exam.objects.get(pk=pk)
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        file_serializer = ExamFileSerializer(id=pk)
+        if file_serializer.is_valid():
+            file_serializer.update_instance()
+        return Response(status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['delete'])
+    def delete_file(self, request, pk):
+        try:
+            exam = Exam.objects.get(pk=pk)
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        delete_file(pk)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+
+    @action(detail=True, methods=['get'])
+    def get_file_url(self, request, pk):
+        try:
+            exam = Exam.objects.get(pk=pk)
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        result = retrieve_file(pk)
+        return Response(data={'url': result.url}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def get_exams(self, request):
         pass
     
 

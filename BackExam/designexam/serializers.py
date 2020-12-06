@@ -17,6 +17,9 @@ class ExamFileSerializer(serializers.Serializer):
 
         if file.size > 10485760:
             raise serializers.ValidationError("the size of file is above of 10 MB")
+
+        #check the this exam has questions or not
+
         self.file = file
         return file
 
@@ -25,6 +28,7 @@ class ExamFileSerializer(serializers.Serializer):
 
     def update_instance(self):
         response = self.save_file()
+        self.exam_obj.have_file = True
         self.exam_obj.file_id = response.id
         self.exam_obj.save()
 
