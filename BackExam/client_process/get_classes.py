@@ -8,11 +8,11 @@ def get_classes(id:int):
         classes = stub.List(user_id)
         return classes
 
-def get_commen_classes(id:str):
+def get_common_classes(id:str):
     with grpc.insecure_channel('localhost:50051') as channel:
-        stub = class_pb2_grpc.ClassControllerStub(channel)
+        stub = class_pb2cd_grpc.ClassControllerStub(channel)
         class_id = class_pb2.ClassId(id)
-        classes = stub.GetCommenClasses(class_id)
+        classes = stub.GetCommonClasses(class_id)
         return classes
 
 def is_exist(id:str):

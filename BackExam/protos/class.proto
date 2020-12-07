@@ -4,7 +4,7 @@ package class;
 
 service ClassController {
     rpc List(ClassListRequest) returns (ClassList) {}
-    rpc GetCommenClasses(ClassId) returns (ClassList) {}
+    rpc GetCommonClasses(ClassId) returns (ClassList) {}
     rpc IsExist(ClassId) returns(IsExistResponse) {}
 }
 

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\t\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x04\"\x1b\n\x07\x43lassId\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\t\"#\n\x0fIsExistResponse\x12\x10\n\x08is_exist\x18\x01 \x01(\x08\x32\xb3\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x36\n\x10GetCommenClasses\x12\x0e.class.ClassId\x1a\x10.class.ClassList\"\x00\x12\x33\n\x07IsExist\x12\x0e.class.ClassId\x1a\x16.class.IsExistResponse\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0b\x63lass.proto\x12\x05\x63lass\"\x1d\n\tClassList\x12\x10\n\x08\x63lass_id\x18\x01 \x03(\t\"#\n\x10\x43lassListRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x04\"\x1b\n\x07\x43lassId\x12\x10\n\x08\x63lass_id\x18\x01 \x01(\t\"#\n\x0fIsExistResponse\x12\x10\n\x08is_exist\x18\x01 \x01(\x08\x32\xb3\x01\n\x0f\x43lassController\x12\x33\n\x04List\x12\x17.class.ClassListRequest\x1a\x10.class.ClassList\"\x00\x12\x36\n\x10GetCommonClasses\x12\x0e.class.ClassId\x1a\x10.class.ClassList\"\x00\x12\x33\n\x07IsExist\x12\x0e.class.ClassId\x1a\x16.class.IsExistResponse\"\x00\x62\x06proto3'
 )
 
 
@@ -209,8 +209,8 @@ _CLASSCONTROLLER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='GetCommenClasses',
-    full_name='class.ClassController.GetCommenClasses',
+    name='GetCommonClasses',
+    full_name='class.ClassController.GetCommonClasses',
     index=1,
     containing_service=None,
     input_type=_CLASSID,

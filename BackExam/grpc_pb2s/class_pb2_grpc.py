@@ -19,8 +19,8 @@ class ClassControllerStub(object):
                 request_serializer=class__pb2.ClassListRequest.SerializeToString,
                 response_deserializer=class__pb2.ClassList.FromString,
                 )
-        self.GetCommenClasses = channel.unary_unary(
-                '/class.ClassController/GetCommenClasses',
+        self.GetCommonClasses = channel.unary_unary(
+                '/class.ClassController/GetCommonClasses',
                 request_serializer=class__pb2.ClassId.SerializeToString,
                 response_deserializer=class__pb2.ClassList.FromString,
                 )
@@ -40,7 +40,7 @@ class ClassControllerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetCommenClasses(self, request, context):
+    def GetCommonClasses(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -60,8 +60,8 @@ def add_ClassControllerServicer_to_server(servicer, server):
                     request_deserializer=class__pb2.ClassListRequest.FromString,
                     response_serializer=class__pb2.ClassList.SerializeToString,
             ),
-            'GetCommenClasses': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetCommenClasses,
+            'GetCommonClasses': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetCommonClasses,
                     request_deserializer=class__pb2.ClassId.FromString,
                     response_serializer=class__pb2.ClassList.SerializeToString,
             ),
@@ -98,7 +98,7 @@ class ClassController(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetCommenClasses(request,
+    def GetCommonClasses(request,
             target,
             options=(),
             channel_credentials=None,
@@ -108,7 +108,7 @@ class ClassController(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/class.ClassController/GetCommenClasses',
+        return grpc.experimental.unary_unary(request, target, '/class.ClassController/GetCommonClasses',
             class__pb2.ClassId.SerializeToString,
             class__pb2.ClassList.FromString,
             options, channel_credentials,

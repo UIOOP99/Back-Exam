@@ -1,4 +1,4 @@
-from client_process.get_classes import get_commen_classes
+from client_process.get_classes import get_common_classes
 from designexam.models import Exam
 
 class ExamConflictChecker:
@@ -9,7 +9,7 @@ class ExamConflictChecker:
         self.course_id = course_id
     
     def get_class_list(self):
-        classes = get_commen_classes(self.course_id)
+        classes = get_common_classes(self.course_id)
         #check the type of classes
         return classes
 
