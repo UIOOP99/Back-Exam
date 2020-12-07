@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Exam(models.Model):  # Teachers
     title = models.CharField(max_length=200, blank=False, default='')
@@ -14,7 +12,7 @@ class Exam(models.Model):  # Teachers
     file_id = models.PositiveIntegerField(default=None)
     setting = models.BooleanField(default=True)  # True for FIX questions and False for RANDOM questions
     created_date = models.DateTimeField(auto_now_add=True, blank=False)
-    author_choices = (('PROFESSOR', 1), ('ADMIN', 2), )
+    author_choices = (('PROFESSOR', 'PROFESSOR'), ('ADMIN', 'ADMIN'), )
     author = models.IntegerField(choices=author_choices)
 
 

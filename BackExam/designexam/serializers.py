@@ -3,7 +3,7 @@ import datetime
 from client_process.file_management import create_file
 from client_process.get_classes import is_exist
 from exam_extra_classes.check_conflict import ExamConflictChecker
-from .models import Exam
+from .models import Exam, DescriptiveQuestion, MultipleQuestion
 
 
 class ExamFileSerializer(serializers.Serializer):
@@ -13,6 +13,9 @@ class ExamFileSerializer(serializers.Serializer):
         self.exam_obj = Exam.objects.get(id = Exam_id)
 
     def validate_questions_file(self, value):
+        if self.has_questions():
+            raise serializers.ValidationError("this exam has questions")
+
         file = value
         if file.content_type not in ['application/pdf', ]:
             raise serializers.ValidationError("the format is invalid")
@@ -20,10 +23,14 @@ class ExamFileSerializer(serializers.Serializer):
         if file.size > 10485760:
             raise serializers.ValidationError("the size of file is above of 10 MB")
 
-        #check the this exam has questions or not
-
         self.file = file
         return file
+
+    def has_questions(self):
+        if DescriptiveQuestion.objects.filter(examID=self.exam_obj) or \
+             MultipleQuestion.objects.filter(examID=self.exam_obj):
+            return True
+        return False
 
     def save_file(self):
         return create_file(self.file)
@@ -44,26 +51,39 @@ class ExamSerializer(serializers.ModelSerializer):
         read_only_fields = ('author', 'have_file', 'create_date')
 
     def validate_start_date(self, value):
-        if value > datetime.datetime.now():
-            return value
-        #check confilict
-        raise serializers.ValidationError('start date must be less than now')
+        if value <= datetime.datetime.now():
+            raise serializers.ValidationError('start date must be less than now')
+        return value
 
     def validate_end_date(self, value):
         try:
             start_time = datetime.datetime.strptime(self.initial_data['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
         except:
             raise serializers.ValidationError('the format of time is invalid')
-        if value > datetime.datetime.now() and value > start_time:
-            return value
-        #check confilict
-        raise serializers.ValidationError('end date must be less than start time')
+
+        if value <= datetime.datetime.now() or value <= start_time:
+            raise serializers.ValidationError('end date must be less than start time')
+
+        return value
 
     def validate_courseId(self, value):
         if is_exist(value):
             return value
         else:
             return serializers.ValidationError('the course does not exist') 
+
+    def validate(self, attr):
+        try:
+            start_time = datetime.datetime.strptime(attr['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
+            end_time = datetime.datetime.strptime(attr['end_date'], format='%Y-%m-%dT%H:%M:%S.%f')
+        except:
+            raise serializers.ValidationError('the format of time is invalid')
+
+        checker = ExamConflictChecker(start_time, end_time, attr['courseID']).has_conflict()
+        if checker:
+            raise serializers.ValidationError('this time have conflict with other exams')
+
+        return attr 
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)

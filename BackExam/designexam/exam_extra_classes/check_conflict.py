@@ -14,17 +14,11 @@ class ExamConflictChecker:
         return classes
 
     def has_conflict(self):
-        course_list = self.get_class_list
-        exams = Exam.objects.filter(courseID__in=course_list, start_date__gt=self.end_time, 
-                                    end_date__lte=self.end_time)
-        
-        if exams:
-            return True
-
-        exams = Exam.objects.filter(courseID__in=course_list, start_date__gte=self.start_time, 
-                                    end_date__lt=self.start_time)
-
-        if exams:
+        course_list = self.get_class_list()
+        if Exam.objects.filter(courseID__in=course_list, start_date__gt=self.end_time, 
+                                    end_date__lte=self.end_time) or \
+            Exam.objects.filter(courseID__in=course_list, start_date__gte=self.start_time, 
+                                    end_date__lt=self.start_time):
             return True
         
         return False
