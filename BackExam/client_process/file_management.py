@@ -10,8 +10,9 @@ def delete_file(id):
 def create_file(file):
    with grpc.insecure_channel('localhost:50051') as channel: 
        stub = file_pb2_grpc.FileControllerStub(channel) 
+       name = file.name
        data = file.read()
-       content = file_pb2.File(content=data)
+       content = file_pb2.File(content=data, name=name)
        result = stub.CreateFile(content)
        return result
 
