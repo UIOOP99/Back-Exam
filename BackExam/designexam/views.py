@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
 from .models import Exam
+from account.models import User
 from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer
 from client_process.file_management import delete_file, retrieve_file
 from client_process.get_classes import is_exist
@@ -22,15 +23,13 @@ class ExamViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, request.auth.payload['role']['Name'])
+        self.perform_create(serializer, request.user.id)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def perform_create(self, serializer, role_name):
-        if role_name == 'admin':
-            serializer.author = 2
-        elif role_name == 'professor':
-            serializer.author = 1
+    def perform_create(self, serializer, user_id):
+        user_role = User.objects.get(pk=user_id).role
+        serializer.author = user_role
         serializer.save()
 
     @transaction.atomic
