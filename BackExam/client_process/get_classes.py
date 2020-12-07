@@ -10,7 +10,7 @@ def get_classes(id:int):
 
 def get_common_classes(id:str):
     with grpc.insecure_channel('localhost:50051') as channel:
-        stub = class_pb2cd_grpc.ClassControllerStub(channel)
+        stub = class_pb2_grpc.ClassControllerStub(channel)
         class_id = class_pb2.ClassId(id)
         classes = stub.GetCommonClasses(class_id)
         return classes
