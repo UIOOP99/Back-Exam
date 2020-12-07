@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from grpc_pb2s import user_pb2_grpc
+from account.services import UserService
 
 # from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
@@ -24,3 +26,6 @@ urlpatterns = [
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 ]
+
+def grpc_handlers(server):
+    user_pb2_grpc.add_UserControllerServicer_to_server(UserService.as_servicer(), server)
