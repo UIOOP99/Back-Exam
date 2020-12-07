@@ -9,6 +9,8 @@ from django.db import transaction
 from .models import Exam
 from account.models import User
 from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer
+from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
+    HasAccessToReadExams, HasTimeToEditDelete, ReachTimeToReadExam
 from client_process.file_management import delete_file, retrieve_file
 from client_process.get_classes import is_exist
 from exam_extra_classes.exam_list import ExamList, CourseExamList
@@ -18,7 +20,25 @@ class ExamViewSet(ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
     http_method_names = ['get', 'delete', 'patch', 'post']
-    permission_classes = [IsAuthenticated, ]
+    
+    def get_permissions(self):
+        if self.action == "create" or self.action == "create_file":
+            permission = [IsAuthenticated, IsOwnerToCreate, ]
+
+        elif self.action == "partial_update":
+            permission = [IsAuthenticated, IsOwnerToEditDelete, HasTimeToEditDelete, HasAccessToEdit, ]
+        
+        elif self.action == "destroy" or self.action == "delete_file":
+            permission = [IsAuthenticated, IsOwnerToEditDelete, HasTimeToEditDelete, HasAccessToDelete, ]
+        
+        elif self.action == "retrieve" or self.action == "get_file_url":
+            permission = [IsAuthenticated, HasAccessToReadExams, ReachTimeToReadExam, ]
+        
+        else:
+            permission = [IsAuthenticated, HasAccessToReadExams, ]
+        
+        return permission
+        
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -74,7 +94,7 @@ class ExamViewSet(ModelViewSet):
 
 
 @api_view(['GET', ])
-@permission_classes([IsAuthenticated, ])
+@permission_classes((IsAuthenticated, HasAccessToReadExams))
 def get_course_exams(self, request, course_id):
     if not is_exist(course_id):
         return Response(status=status.HTTP_404_NOT_FOUND)

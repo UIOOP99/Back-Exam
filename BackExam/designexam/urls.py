@@ -9,8 +9,9 @@ urlpatterns=[
     })),
     path('exam/file/<int:pk>/', views.ExamViewSet.as_view({
         "post": "create_file",
-        "delete": "delete_file"})),
+        "delete": "delete_file",
+        "get": "get_file_url"})),
     path("exam/", views.ExamViewSet.as_view({"post": "create", })),
     path("exams/", views.ExamViewSet.as_view({"get": "get_exams",})),
-    path("get-course-exams/<int:course_id>/", views.get_course_exams),
+    path("exams/<int:course_id>/", views.get_course_exams),
 ]

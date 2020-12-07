@@ -66,7 +66,7 @@ class ExamSerializer(serializers.ModelSerializer):
 
         return value
 
-    def validate_courseId(self, value):
+    def validate_courseID(self, value):
         if is_exist(value):
             return value
         else:

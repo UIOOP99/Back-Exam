@@ -1,31 +1,41 @@
 from rest_framework import permissions
-from client_process.get_classes import get_classes
 import datetime
+
+from client_process.get_classes import get_classes
 from .models import Exam
+from account.models import User
 
 
 class IsOwnerToCreate(permissions.BasePermission):
-    # check this id is the teacher of the class
+    # check this id is the teacher of the class or it is admin
     def has_permission(self, request, view):
-        classes = get_classes(request.user.id)
-        if request.data['courseID'] not in classes:
-            return False
-        return True
+        if request.user.role == "ADMIN":
+            return True
+        elif request.user.role == "PROFESSOR":
+            classes = get_classes(request.user.id)
+            if request.data['courseID'] not in classes:
+                return False
+            return True
+        return False
 
 
 class IsOwnerToEditDelete(permissions.BasePermission):
-    # check this id is the teacher of the class
+    # check this id is the teacher of the class or it is admin
     def has_permission(self, request, view):
         try:
             exam = Exam.objects.get(pk=view.kwargs['pk'])
         except Exam.DoesNotExist:
             return False
 
-        classes = get_classes(request.user.id)
-        if exam.courseID not in classes:
-            return False
+        if request.user.role == "ADMIN":
+            return True
+        elif request.user.role == "PROFESSOR":
+            classes = get_classes(request.user.id)
+            if exam.courseID not in classes:
+                return False
+            return True
 
-        return True
+        return False
 
 
 class HasTimeToEditDelete(permissions.BasePermission):
@@ -50,7 +60,7 @@ class HasAccessToDelete(permissions.BasePermission):
         except Exam.DoesNotExist:
             return False
 
-        if exam.author != 1:# must check the role and if he is teacher --> false
+        if exam.author == "ADMIN" and request.user.role == "PROFESSOR":
             return False
         
         return True
@@ -58,7 +68,50 @@ class HasAccessToDelete(permissions.BasePermission):
 class HasAccessToEdit(permissions.BasePermission):
     #check has access to edit some fields
     def has_permission(self, request, view):
-        pass
+        try:
+            exam = Exam.objects.get(pk=view.kwargs['pk'])
+        except Exam.DoesNotExist:
+            return False
+
+        if request.user.role == "PROFESSOR" and\
+            ("start_date" in request.data or "end_date" in request.data):
+            return False
+        
+        return True
+
+
+class HasAccessToReadExams(permissions.BasePermission):
+    #check the user has access to see more details about exam
+    def has_permission(self, request, view):
+        try:
+            exam = Exam.objects.get(pk=view.kwargs['pk'])
+        except Exam.DoesNotExist:
+            return False
+        
+        if request.user.role == "ADMIN":
+            return True
+        else:
+            classes = get_classes(request.user.id)
+            if view.kwargs['pk'] not in classes:
+                return False
+        
+        return True
+
+
+class ReachTimeToReadExam(permissions.BasePermission):
+    #check the time for Student to see more details about exam
+    def has_permission(self, request, view):
+        try:
+            exam = Exam.objects.get(pk=view.kwargs['pk'])
+        except Exam.DoesNotExist:
+            return False
+
+        if request.user.role == "STUDENT":
+            if exam.start_date < datetime.datetime.now():
+                return False
+        
+        return True
+
 
 
         
