@@ -7,8 +7,10 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
 from .models import Exam
-from .serializers import ExamSerializer, ExamFileSerializer
+from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer
 from client_process.file_management import delete_file, retrieve_file
+from client_process.get_classes import is_exist
+from exam_extra_classes.exam_list import ExamList, CourseExamList
 
 
 class ExamViewSet(ModelViewSet):
@@ -67,7 +69,20 @@ class ExamViewSet(ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def get_exams(self, request):
-        pass
+        exams = ExamList(request.user.id).get_exams()
+        exams_ser = ExamListSerializer(exams, many=True)
+        return Response(exams_ser.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', ])
+@permission_classes([IsAuthenticated, ])
+def get_course_exams(self, request, course_id):
+    if not is_exist(course_id):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    exams = CourseExamList(course_id).get_exams
+    exam_ser = ExamListSerializer(exams, many=True)
+    return Response(exam_ser.data, status=status.HTTP_200_OK)
+    
     
 
     
