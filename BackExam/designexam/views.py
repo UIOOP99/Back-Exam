@@ -74,6 +74,7 @@ class ExamViewSet(ModelViewSet):
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         delete_file(pk)
+        exam.have_file = False
         return Response(status=status.HTTP_204_NO_CONTENT)
         
 
