@@ -1,4 +1,4 @@
-from designexam.model import Exam
+from designexam.models import Exam
 from client_process.get_classes import get_classes
 
 

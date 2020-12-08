@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'designexam',
     'answerexam',
     'result',
+    'account',
 ]
 
 MIDDLEWARE = [

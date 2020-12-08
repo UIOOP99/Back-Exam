@@ -13,7 +13,7 @@ from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete,
     HasAccessToReadExams, HasTimeToEditDelete, ReachTimeToReadExam
 from client_process.file_management import delete_file, retrieve_file
 from client_process.get_classes import is_exist
-from exam_extra_classes.exam_list import ExamList, CourseExamList
+from .exam_extra_classes.exam_list import ExamList, CourseExamList
 
 
 class ExamViewSet(ModelViewSet):

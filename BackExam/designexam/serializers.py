@@ -2,7 +2,7 @@ from rest_framework import serializers
 import datetime
 from client_process.file_management import create_file
 from client_process.get_classes import is_exist
-from exam_extra_classes.check_conflict import ExamConflictChecker
+from .exam_extra_classes.check_conflict import ExamConflictChecker
 from .models import Exam, DescriptiveQuestion, MultipleQuestion
 
 
