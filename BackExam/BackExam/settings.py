@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'django_grpc_framework',
     'rest_framework_simplejwt',
     'designexam',
     'answerexam',
@@ -119,7 +120,7 @@ REST_FRAMEWORK = {
 }
 
 GRPC_FRAMEWORK = {
-    'ROOT_HANDLERS_HOOK': 'ui_services.urls.grpc_handlers',
+    'ROOT_HANDLERS_HOOK': 'BackExam.urls.grpc_handlers',
 }
 
 # Internationalization
