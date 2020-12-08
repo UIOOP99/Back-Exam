@@ -14,12 +14,12 @@ def create_file(file):
        data = file.read()
        content = file_pb2.File(content=data, name=name)
        result = stub.CreateFile(content)
-       return result
+       return result.id
 
 def retrieve_file(id):
     with grpc.insecure_channel('localhost:50051') as channel:  
         stub = file_pb2_grpc.FileControllerStub(channel) 
         file_id = file_pb2.FileId(id=id)
         result = stub.RetrieveFile(file_id)
-        return result
+        return result.url
 

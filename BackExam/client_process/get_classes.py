@@ -6,20 +6,20 @@ def get_classes(id:int):
         stub = class_pb2_grpc.ClassControllerStub(channel)
         user_id = class_pb2.ClassListRequest(id)
         classes = stub.List(user_id)
-        return classes
+        return list(classes.class_id)
 
 def get_common_classes(id:str):
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = class_pb2_grpc.ClassControllerStub(channel)
         class_id = class_pb2.ClassId(id)
         classes = stub.GetCommonClasses(class_id)
-        return classes
+        return list(classes.class_id)
 
 def is_exist(id:str):
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = class_pb2_grpc.ClassControllerStub(channel)
         class_id = class_pb2.ClassId(id)
         value = stub.IsExist(class_id)
-        return value
+        return value.is_exist
 
         
