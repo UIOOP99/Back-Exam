@@ -1,5 +1,6 @@
 from rest_framework import permissions
 import datetime
+from django.utils import timezone
 
 from client_process.get_classes import get_classes
 from .models import Exam
@@ -49,7 +50,7 @@ class HasTimeToEditDelete(permissions.BasePermission):
         if request.user.role == "ADMIN":
             return True
 
-        if exam.end_date >= datetime.datetime.now():
+        if exam.end_date >= timezone.now():
             return False
         
         return True
@@ -110,7 +111,7 @@ class ReachTimeToReadExam(permissions.BasePermission):
             return False
 
         if request.user.role == "STUDENT":
-            if exam.start_date < datetime.datetime.now():
+            if exam.start_date < timezone.now():
                 return False
         
         return True

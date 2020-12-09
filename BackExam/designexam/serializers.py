@@ -2,6 +2,7 @@ from rest_framework import serializers
 import datetime
 from client_process.file_management import create_file
 from client_process.get_classes import is_exist
+from django.utils import timezone
 from .exam_extra_classes.check_conflict import ExamConflictChecker
 from .models import Exam, DescriptiveQuestion, MultipleQuestion
 
@@ -51,18 +52,18 @@ class ExamSerializer(serializers.ModelSerializer):
         read_only_fields = ('author', 'have_file', 'create_date')
 
     def validate_start_date(self, value):
-        if value <= datetime.datetime.now():
+        if value <= timezone.now():
             raise serializers.ValidationError('start date must be less than now')
         return value
 
     def validate_end_date(self, value):
         try:
-            start_time = datetime.datetime.strptime(self.initial_data['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
+            start_time = datetime.datetime.strptime(self.initial_data['start_date'], '%Y-%m-%dT%H:%M:%S.%f')
         except:
             raise serializers.ValidationError('the format of time is invalid')
 
-        if value <= datetime.datetime.now() or value <= start_time:
-            raise serializers.ValidationError('end date must be less than start time')
+        if value <= timezone.now() or value <= start_time:
+            raise serializers.ValidationError('end date must be less than start time and now')
 
         return value
 
