@@ -74,13 +74,8 @@ class ExamSerializer(serializers.ModelSerializer):
             return serializers.ValidationError('the course does not exist') 
 
     def validate(self, attr):
-        try:
-            start_time = datetime.datetime.strptime(attr['start_date'], format='%Y-%m-%dT%H:%M:%S.%f')
-            end_time = datetime.datetime.strptime(attr['end_date'], format='%Y-%m-%dT%H:%M:%S.%f')
-        except:
-            raise serializers.ValidationError('the format of time is invalid')
-
-        checker = ExamConflictChecker(start_time, end_time, attr['courseID']).has_conflict()
+        
+        checker = ExamConflictChecker(attr['start_date'], attr['end_date'], attr['courseID']).has_conflict()
         if checker:
             raise serializers.ValidationError('this time have conflict with other exams')
 
