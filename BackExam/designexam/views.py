@@ -75,6 +75,7 @@ class ExamViewSet(ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         delete_file(pk)
         exam.have_file = False
+        exam.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
         
 
@@ -85,7 +86,7 @@ class ExamViewSet(ModelViewSet):
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         result = retrieve_file(pk)
-        return Response(data={'url': result.url}, status=status.HTTP_200_OK)
+        return Response(data={'url': result}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'])
     def get_exams(self, request):

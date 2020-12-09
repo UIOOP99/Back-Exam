@@ -38,7 +38,7 @@ class ExamFileSerializer(serializers.Serializer):
     def update_instance(self):
         response = self.save_file()
         self.exam_obj.have_file = True
-        self.exam_obj.file_id = response.id
+        self.exam_obj.file_id = response
         self.exam_obj.save()
 
 

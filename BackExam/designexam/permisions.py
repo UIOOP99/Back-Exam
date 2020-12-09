@@ -46,6 +46,9 @@ class HasTimeToEditDelete(permissions.BasePermission):
         except Exam.DoesNotExist:
             return False
 
+        if request.user.role == "ADMIN":
+            return True
+
         if exam.end_date >= datetime.datetime.now():
             return False
         
