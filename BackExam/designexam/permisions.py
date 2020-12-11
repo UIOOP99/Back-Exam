@@ -50,7 +50,7 @@ class HasTimeToEditDelete(permissions.BasePermission):
         if request.user.role == "ADMIN":
             return True
 
-        if exam.end_date >= timezone.now():
+        if exam.end_date <= timezone.now():
             return False
         
         return True
