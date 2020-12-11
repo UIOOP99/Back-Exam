@@ -19,23 +19,24 @@ from .exam_extra_classes.exam_list import ExamList, CourseExamList
 class ExamViewSet(ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
+    permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'delete', 'patch', 'post']
     
     def get_permissions(self):
         if self.action == "create" or self.action == "create_file":
-            permission = [IsAuthenticated, IsOwnerToCreate, ]
+            permission = (IsAuthenticated(), IsOwnerToCreate(), )
 
         elif self.action == "partial_update":
-            permission = [IsAuthenticated, IsOwnerToEditDelete, HasTimeToEditDelete, HasAccessToEdit, ]
+            permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), HasAccessToEdit(), )
         
         elif self.action == "destroy" or self.action == "delete_file":
-            permission = [IsAuthenticated, IsOwnerToEditDelete, HasTimeToEditDelete, HasAccessToDelete, ]
+            permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), HasAccessToDelete(), )
         
         elif self.action == "retrieve" or self.action == "get_file_url":
-            permission = [IsAuthenticated, HasAccessToReadExams, ReachTimeToReadExam, ]
+            permission = (IsAuthenticated(), HasAccessToReadExams(), ReachTimeToReadExam(), )
         
         else:
-            permission = [IsAuthenticated, HasAccessToReadExams, ]
+            permission = (IsAuthenticated(), HasAccessToReadExams(), )
         
         return permission
         
