@@ -74,8 +74,17 @@ class ExamSerializer(serializers.ModelSerializer):
             return serializers.ValidationError('the course does not exist') 
 
     def validate(self, attr):
-        
-        checker = ExamConflictChecker(attr['start_date'], attr['end_date'], attr['courseID']).has_conflict()
+        if self.instance:
+            start_date = attr.get('start_date', self.instance.start_date)
+            end_date = attr.get("end_date", self.instance.end_date)
+            course_id = self.instance.courseID
+            exam_id = self.instance.id
+        else:
+            start_date = attr['start_date']
+            end_date = attr['end_date']
+            course_id = attr['courseID']
+            exam_id = -1
+        checker = ExamConflictChecker(start_date, end_date, course_id, exam_id).has_conflict()
         if checker:
             raise serializers.ValidationError('this time have conflict with other exams')
 
