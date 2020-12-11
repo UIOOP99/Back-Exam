@@ -11,15 +11,16 @@ class ExamConflictChecker:
     
     def get_class_list(self):
         classes = get_common_classes(self.course_id)
-        #check the type of classes
         return classes
 
     def has_conflict(self):
         course_list = self.get_class_list()
-        if Exam.objects.filter(courseID__in=course_list, start_date__gt=self.end_time, 
-                                    end_date__lte=self.end_time).exclude(id=self.exam_id) or \
-            Exam.objects.filter(courseID__in=course_list, start_date__gte=self.start_time, 
-                                    end_date__lt=self.start_time).exclude(id=self.exam_id):
+
+        if Exam.objects.filter(courseID__in=course_list, start_date__lt=self.end_time, 
+                                    end_date__gte=self.end_time).exclude(id=self.exam_id) or \
+            Exam.objects.filter(courseID__in=course_list, start_date__lte=self.start_time, 
+                                    end_date__gt=self.start_time).exclude(id=self.exam_id):
+
             return True
         
         return False
