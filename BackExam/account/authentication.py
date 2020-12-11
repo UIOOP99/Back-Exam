@@ -24,7 +24,7 @@ pGnFD63N6W/889YAoZs=
         except jwt.exceptions.DecodeError:
             raise AuthenticationFailed("Invalid JWT")
         except jwt.exceptions.ExpiredSignatureError:
-            raise AuthenticationFailed("The JWT is expire")
+            raise AuthenticationFailed("The JWT is expired")
         except:
             raise AuthenticationFailed()
 
