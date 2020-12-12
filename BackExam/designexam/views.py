@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Exam
 from account.models import User
@@ -98,19 +99,24 @@ class ExamViewSet(ModelViewSet):
     @action(detail=False, methods=['get'])
     def get_exams(self, request):
         exams = ExamList(request.user.id).get_exams()
-        exams_ser = ExamListSerializer(exams, many=True)
-        return Response(exams_ser.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        result_page = paginator.paginate_queryset(exams, request)
+        exams_ser = ExamListSerializer(result_page, many=True)
+        return paginator.get_paginated_response(exams_ser.data)
 
 
 @api_view(['GET', ])
-@permission_classes((IsAuthenticated, HasAccessToReadExams))
-def get_course_exams(self, request, course_id):
+@permission_classes((IsAuthenticated, HasAccessToReadExams, ))
+def get_course_exams(request, course_id):
     if not is_exist(course_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     exams = CourseExamList(course_id).get_exams()
-    exam_ser = ExamListSerializer(exams, many=True)
-    return Response(exam_ser.data, status=status.HTTP_200_OK)
-    
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+    result_page = paginator.paginate_queryset(exams, request)
+    exams_ser = ExamListSerializer(result_page, many=True)
+    return paginator.get_paginated_response(exams_ser.data)
     
 
     

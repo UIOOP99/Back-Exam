@@ -22,7 +22,7 @@ class ExamList:
 
     def student_teacher_list(self):
         course_list = self.get_course_list()
-        exams = Exam.objects.filter(courseId__in=course_list).order_by('start_date')
+        exams = Exam.objects.filter(courseID__in=course_list).order_by('start_date')
         return exams
 
     def get_exams(self):
