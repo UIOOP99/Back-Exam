@@ -84,7 +84,7 @@ class HasAccessToEdit(permissions.BasePermission):
         return True
 
 
-class HasAccessToReadExams(permissions.BasePermission):
+class HasAccessToReadExam(permissions.BasePermission):
     #check the user has access to see more details about exam
     def has_permission(self, request, view):
         try:
@@ -96,7 +96,20 @@ class HasAccessToReadExams(permissions.BasePermission):
             return True
         else:
             classes = get_classes(request.user.id)
-            if view.kwargs['pk'] not in classes:
+            if exam.courseID not in classes:
+                return False
+        
+        return True
+
+
+class HasAccessToReadExams(permissions.BasePermission):
+    #check the user has access to see more details about exam
+    def has_permission(self, request, view):
+        if request.user.role == "ADMIN":
+            return True
+        else:
+            classes = get_classes(request.user.id)
+            if view.kwargs['course_id'] not in classes:
                 return False
         
         return True
@@ -111,7 +124,7 @@ class ReachTimeToReadExam(permissions.BasePermission):
             return False
 
         if request.user.role == "STUDENT":
-            if exam.start_date < timezone.now():
+            if exam.start_date > timezone.now():
                 return False
         
         return True

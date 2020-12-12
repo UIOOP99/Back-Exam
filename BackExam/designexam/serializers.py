@@ -10,8 +10,9 @@ from .models import Exam, DescriptiveQuestion, MultipleQuestion
 class ExamFileSerializer(serializers.Serializer):
     questions_file = serializers.FileField(write_only=True, allow_null=True)
 
-    def __init__(self, Exam_id):
-        self.exam_obj = Exam.objects.get(id = Exam_id)
+    def __init__(self, exam_id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exam_obj = Exam.objects.get(id = exam_id)
 
     def validate_questions_file(self, value):
         if self.has_questions():

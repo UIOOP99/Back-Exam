@@ -1,4 +1,5 @@
 from designexam.models import Exam
+from account.models import User
 from client_process.get_classes import get_classes
 
 
@@ -9,7 +10,7 @@ class ExamList:
         self.role = None
 
     def get_role(self):
-        pass
+        self.role = User.objects.get(id=self.user_id).role
 
     def admin_list(self):
         exams = Exam.objects.all().order_by('start_date')
@@ -17,7 +18,6 @@ class ExamList:
 
     def get_course_list(self):
         course_list = get_classes(self.user_id)
-        #check the type of course_list
         return course_list
 
     def student_teacher_list(self):
