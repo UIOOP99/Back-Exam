@@ -10,7 +10,7 @@ from .models import Exam
 from account.models import User
 from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
-    HasAccessToReadExams, HasTimeToEditDelete, ReachTimeToReadExam
+    HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
 from client_process.file_management import delete_file, retrieve_file
 from client_process.get_classes import is_exist
 from .exam_extra_classes.exam_list import ExamList, CourseExamList
@@ -33,10 +33,10 @@ class ExamViewSet(ModelViewSet):
             permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), HasAccessToDelete(), )
         
         elif self.action == "retrieve" or self.action == "get_file_url":
-            permission = (IsAuthenticated(), HasAccessToReadExams(), ReachTimeToReadExam(), )
+            permission = (IsAuthenticated(), HasAccessToReadExam(), ReachTimeToReadExam(), )
         
         else:
-            permission = (IsAuthenticated(), HasAccessToReadExams(), )
+            permission = (IsAuthenticated(), )
         
         return permission
         
@@ -63,10 +63,11 @@ class ExamViewSet(ModelViewSet):
             exam = Exam.objects.get(pk=pk)
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        file_serializer = ExamFileSerializer(id=pk)
+        file_serializer = ExamFileSerializer(data=request.data, exam_id=pk)
         if file_serializer.is_valid():
             file_serializer.update_instance()
-        return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['delete'])
     def delete_file(self, request, pk):
@@ -74,10 +75,13 @@ class ExamViewSet(ModelViewSet):
             exam = Exam.objects.get(pk=pk)
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        delete_file(pk)
-        exam.have_file = False
-        exam.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if exam.have_file:
+            result = delete_file(exam.file_id)
+            exam.have_file = False
+            exam.file_id = None
+            exam.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
         
 
     @action(detail=True, methods=['get'])
@@ -86,8 +90,10 @@ class ExamViewSet(ModelViewSet):
             exam = Exam.objects.get(pk=pk)
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        result = retrieve_file(pk)
-        return Response(data={'url': result}, status=status.HTTP_200_OK)
+        if exam.have_file:
+            result = retrieve_file(exam.file_id)
+            return Response(data={'url': result}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=False, methods=['get'])
     def get_exams(self, request):
@@ -101,7 +107,7 @@ class ExamViewSet(ModelViewSet):
 def get_course_exams(self, request, course_id):
     if not is_exist(course_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
-    exams = CourseExamList(course_id).get_exams
+    exams = CourseExamList(course_id).get_exams()
     exam_ser = ExamListSerializer(exams, many=True)
     return Response(exam_ser.data, status=status.HTTP_200_OK)
     

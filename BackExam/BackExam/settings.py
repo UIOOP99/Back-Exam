@@ -139,6 +139,9 @@ USE_TZ = False
 
 AUTH_USER_MODEL = 'account.User'
 
+FILE_SYSTEM_URL = "localhost:50053"
+GOLESTAN_SYSTEM_URL = "localhost:50053"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
