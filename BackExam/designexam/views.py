@@ -24,14 +24,20 @@ class ExamViewSet(ModelViewSet):
     http_method_names = ['get', 'delete', 'patch', 'post']
     
     def get_permissions(self):
-        if self.action == "create" or self.action == "create_file":
+        if self.action == "create":
             permission = (IsAuthenticated(), IsOwnerToCreate(), )
+
+        elif self.action == "create_file":
+            permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), )
 
         elif self.action == "partial_update":
             permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), HasAccessToEdit(), )
         
-        elif self.action == "destroy" or self.action == "delete_file":
+        elif self.action == "destroy" :
             permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), HasAccessToDelete(), )
+        
+        elif self.action == "delete_file":
+            permission = (IsAuthenticated(), IsOwnerToEditDelete(), HasTimeToEditDelete(), )
         
         elif self.action == "retrieve" or self.action == "get_file_url":
             permission = (IsAuthenticated(), HasAccessToReadExam(), ReachTimeToReadExam(), )
@@ -45,12 +51,14 @@ class ExamViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, request.user.id)
+        self.perform_create(serializer, request.user.role)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def perform_create(self, serializer, user_id):
-        user_role = User.objects.get(pk=user_id).role
+    def perform_create(self, serializer, user_role):
+        exam = serializer.save()
+        exam.author = user_role
+        exam.save()
         serializer.author = user_role
         serializer.save()
 

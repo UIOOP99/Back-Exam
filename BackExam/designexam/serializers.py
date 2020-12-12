@@ -92,13 +92,20 @@ class ExamSerializer(serializers.ModelSerializer):
         return attr 
 
     def update(self, instance, validated_data):
+        print(validated_data)
         instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
+        instance.description = validated_data.get('description', instance.description) 
+        instance.author = validated_data.get('author', instance.author) 
 
-        if instance.start_time > datetime.datetime.now():
-            instance.start_time = validated_data.get('start_time', instance.start_time)
-        if instance.end_time > datetime.datetime.now():
-            instance.end_time = validated_data.get('end_time', instance.end_time)
+        if instance.start_date > datetime.datetime.now():
+            instance.start_date = validated_data.get('start_date', instance.start_date)
+        if instance.end_date > datetime.datetime.now():
+            instance.end_date = validated_data.get('end_date', instance.end_date)
+
+        instance.save()
+
+        return instance
+
 
 
 class ExamListSerializer(serializers.ModelSerializer):
