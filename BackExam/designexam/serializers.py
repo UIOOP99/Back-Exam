@@ -3,6 +3,8 @@ import datetime
 from client_process.file_management import create_file
 from client_process.get_classes import is_exist
 from django.utils import timezone
+from drf_yasg.utils import swagger_serializer_method
+from drf_yasg import openapi
 from .exam_extra_classes.check_conflict import ExamConflictChecker
 from .models import Exam, DescriptiveQuestion, MultipleQuestion
 
@@ -10,7 +12,7 @@ from .models import Exam, DescriptiveQuestion, MultipleQuestion
 class ExamFileSerializer(serializers.Serializer):
     questions_file = serializers.FileField(write_only=True, allow_null=True)
 
-    def __init__(self, exam_id, *args, **kwargs):
+    def __init__(self, exam_id=1, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.exam_obj = Exam.objects.get(id = exam_id)
 
@@ -99,6 +101,7 @@ class ExamSerializer(serializers.ModelSerializer):
 
         if instance.start_date > datetime.datetime.now():
             instance.start_date = validated_data.get('start_date', instance.start_date)
+            instance.setting = validated_data.get('setting', instance.setting)
         if instance.end_date > datetime.datetime.now():
             instance.end_date = validated_data.get('end_date', instance.end_date)
 
@@ -115,6 +118,7 @@ class ExamListSerializer(serializers.ModelSerializer):
         model = Exam
         fields = ('id', 'title', 'courseID', 'start_date', 'end_date', 'status')
 
+    @swagger_serializer_method(serializer_or_field=serializers.CharField)
     def set_status(self, obj):
         if datetime.datetime.now() < obj.start_date:
             return 'not held'

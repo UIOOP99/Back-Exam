@@ -4,8 +4,13 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from drf_yasg.inspectors import DjangoRestResponsePagination
 
 from .models import Exam
 from account.models import User
@@ -19,8 +24,8 @@ from .exam_extra_classes.exam_list import ExamList, CourseExamList
 
 class ExamViewSet(ModelViewSet):
     queryset = Exam.objects.all()
-    serializer_class = ExamSerializer
     permission_classes = [IsAuthenticated, ]
+    serializer_class = ExamSerializer
     http_method_names = ['get', 'delete', 'patch', 'post']
     
     def get_permissions(self):
@@ -47,7 +52,7 @@ class ExamViewSet(ModelViewSet):
         
         return permission
         
-
+    @swagger_auto_schema(tags=['exam'])
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -62,10 +67,12 @@ class ExamViewSet(ModelViewSet):
         serializer.author = user_role
         serializer.save()
 
+    @swagger_auto_schema(tags=['exam'])
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    @swagger_auto_schema(tags=['Exam File'], request_body=ExamFileSerializer)
     @action(detail=True, methods=['post'])
     def create_file(self, request, pk):
         try:
@@ -78,6 +85,7 @@ class ExamViewSet(ModelViewSet):
             return Response(status=status.HTTP_201_CREATED)
         return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(tags=['Exam File'])
     @action(detail=True, methods=['delete'])
     def delete_file(self, request, pk):
         try:
@@ -92,7 +100,15 @@ class ExamViewSet(ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)
         
-
+    @swagger_auto_schema(tags=['Exam File',], operation_description="get file exam URL", 
+    responses={status.HTTP_200_OK: openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={'url': openapi.Schema(
+              type=openapi.TYPE_STRING
+           )
+        }
+    )
+    })
     @action(detail=True, methods=['get'])
     def get_file_url(self, request, pk):
         try:
@@ -104,8 +120,12 @@ class ExamViewSet(ModelViewSet):
             return Response(data={'url': result}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=['get'])
-    def get_exams(self, request):
+    
+class Exams(ListAPIView):
+    serializer_class = ExamListSerializer
+    permission_classes = (IsAuthenticated(), )
+
+    def list(self, request, *args, **kwargs):
         exams = ExamList(request.user.id).get_exams()
         paginator = PageNumberPagination()
         paginator.page_size = 20
@@ -113,18 +133,19 @@ class ExamViewSet(ModelViewSet):
         exams_ser = ExamListSerializer(result_page, many=True)
         return paginator.get_paginated_response(exams_ser.data)
 
+class CourseExams(ListAPIView):
+    serializer_class = ExamListSerializer
+    permission_classes = (IsAuthenticated(), HasAccessToReadExams(), )
 
-@api_view(['GET', ])
-@permission_classes((IsAuthenticated, HasAccessToReadExams, ))
-def get_course_exams(request, course_id):
-    if not is_exist(course_id):
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    exams = CourseExamList(course_id).get_exams()
-    paginator = PageNumberPagination()
-    paginator.page_size = 20
-    result_page = paginator.paginate_queryset(exams, request)
-    exams_ser = ExamListSerializer(result_page, many=True)
-    return paginator.get_paginated_response(exams_ser.data)
+    def list(self, request, *args, **kwargs):
+        if not is_exist(kwargs['course_id']):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        exams = CourseExamList(kwargs['course_id']).get_exams()
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        result_page = paginator.paginate_queryset(exams, request)
+        exams_ser = ExamListSerializer(result_page, many=True)
+        return paginator.get_paginated_response(exams_ser.data)
     
 
     

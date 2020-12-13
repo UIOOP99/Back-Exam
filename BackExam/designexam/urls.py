@@ -12,6 +12,7 @@ urlpatterns=[
         "delete": "delete_file",
         "get": "get_file_url"})),
     path("exam/", views.ExamViewSet.as_view({"post": "create", })),
-    path("exams/", views.ExamViewSet.as_view({"get": "get_exams",})),
-    path("exams/<str:course_id>/", views.get_course_exams),
+    # path("exams/", views.ExamViewSet.as_view({"get": "get_exams",})),
+    path("exams/", views.Exams.as_view()),
+    path("exams/<str:course_id>/", views.CourseExams.as_view()),
 ]
