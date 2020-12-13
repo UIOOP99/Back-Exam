@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_grpc_framework',
+    'drf_yasg',
     'rest_framework_simplejwt',
     'designexam',
     'answerexam',
@@ -72,6 +73,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            
+            'libraries': {
+                'staticfiles': 'django.templatetags.static',
+            },
+
         },
     },
 ]
@@ -89,7 +95,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -115,6 +120,15 @@ REST_FRAMEWORK = {
         'account.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.JSONParser',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
 
@@ -146,3 +160,30 @@ GOLESTAN_SYSTEM_URL = "localhost:50053"
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+VENV_PATH = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
+
+SWAGGER_SETTINGS = {
+    'SHOW_REQUEST_HEADERS': True,
+
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}
+
+REDOC_SETTINGS = {
+   'LAZY_RENDERING': False,
+   'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}
+

@@ -72,7 +72,13 @@ class ExamViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
-    @swagger_auto_schema(tags=['Exam File'], request_body=ExamFileSerializer)
+    @swagger_auto_schema(tags=['exam'], 
+    operation_description="before the end_date can edit some fields. if the auther is ADMIN and the user.role is PROFESSOR, cann't set start_date and end_date in request.body ")
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(tags=['Exam File'], operation_description="sould upload a file {'questions_file': FILE}", 
+    request_body=ExamFileSerializer, responses={status.HTTP_201_CREATED: "", status.HTTP_400_BAD_REQUEST: ""})
     @action(detail=True, methods=['post'])
     def create_file(self, request, pk):
         try:
@@ -104,11 +110,8 @@ class ExamViewSet(ModelViewSet):
     responses={status.HTTP_200_OK: openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={'url': openapi.Schema(
-              type=openapi.TYPE_STRING
-           )
-        }
-    )
-    })
+              type=openapi.TYPE_STRING)
+        })})
     @action(detail=True, methods=['get'])
     def get_file_url(self, request, pk):
         try:
