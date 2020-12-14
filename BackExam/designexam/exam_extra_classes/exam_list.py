@@ -13,7 +13,7 @@ class ExamList:
         self.role = User.objects.get(id=self.user_id).role
 
     def admin_list(self):
-        exams = Exam.objects.all().order_by('start_date')
+        exams = Exam.objects.all().order_by('-start_date')
         return exams
 
     def get_course_list(self):
@@ -22,7 +22,7 @@ class ExamList:
 
     def student_teacher_list(self):
         course_list = self.get_course_list()
-        exams = Exam.objects.filter(courseID__in=course_list).order_by('start_date')
+        exams = Exam.objects.filter(courseID__in=course_list).order_by('-start_date')
         return exams
 
     def get_exams(self):
@@ -42,5 +42,5 @@ class CourseExamList:
         self.course_id = course_id
 
     def get_exams(self):
-        exams = Exam.objects.filter(courseID=self.course_id)
+        exams = Exam.objects.filter(courseID=self.course_id).order_by('-start_date')
         return exams

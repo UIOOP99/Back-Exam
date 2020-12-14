@@ -52,7 +52,11 @@ class ExamViewSet(ModelViewSet):
         
         return permission
         
-    @swagger_auto_schema(tags=['exam'])
+    @swagger_auto_schema(tags=['exam'], responses={status.HTTP_400_BAD_REQUEST: """{
+    "non_field_errors": ["this time have conflict with other exams"]} or\n
+    {"start_date": [ "start date must be less than now"], "end_date": ["end date must be less than start time and now"]} or\n ...""",
+    status.HTTP_403_FORBIDDEN: '{ "detail": "You do not have permission to perform this action."}',
+    status.HTTP_201_CREATED: ExamSerializer})
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -73,12 +77,14 @@ class ExamViewSet(ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(tags=['exam'], 
-    operation_description="before the end_date can edit some fields. if the auther is ADMIN and the user.role is PROFESSOR, cann't set start_date and end_date in request.body ")
+    operation_description="""before the end_date can edit some fields. if the auther is ADMIN and the user.role is PROFESSOR, 
+    cann't set start_date and end_date in request.body . respose format = response of create format""")
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(tags=['Exam File'], operation_description="sould upload a file {'questions_file': FILE}", 
-    request_body=ExamFileSerializer, responses={status.HTTP_201_CREATED: "", status.HTTP_400_BAD_REQUEST: ""})
+    request_body=ExamFileSerializer, responses={status.HTTP_201_CREATED: "", status.HTTP_400_BAD_REQUEST: """{
+    "questions_file": ["the format is invalid" or "the size of file is above of 10 MB" or this exam has questions]} """})
     @action(detail=True, methods=['post'])
     def create_file(self, request, pk):
         try:
@@ -91,7 +97,7 @@ class ExamViewSet(ModelViewSet):
             return Response(status=status.HTTP_201_CREATED)
         return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @swagger_auto_schema(tags=['Exam File'])
+    @swagger_auto_schema(tags=['Exam File'], responses={404: "", 204:""})
     @action(detail=True, methods=['delete'])
     def delete_file(self, request, pk):
         try:
@@ -107,11 +113,7 @@ class ExamViewSet(ModelViewSet):
         return Response(status=status.HTTP_404_NOT_FOUND)
         
     @swagger_auto_schema(tags=['Exam File',], operation_description="get file exam URL", 
-    responses={status.HTTP_200_OK: openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={'url': openapi.Schema(
-              type=openapi.TYPE_STRING)
-        })})
+    responses={status.HTTP_200_OK: openapi.Schema(type=openapi.TYPE_OBJECT,properties={'url': openapi.Schema(type=openapi.TYPE_STRING)})})
     @action(detail=True, methods=['get'])
     def get_file_url(self, request, pk):
         try:
@@ -126,7 +128,7 @@ class ExamViewSet(ModelViewSet):
     
 class Exams(ListAPIView):
     serializer_class = ExamListSerializer
-    permission_classes = (IsAuthenticated(), )
+    permission_classes = (IsAuthenticated, )
 
     def list(self, request, *args, **kwargs):
         exams = ExamList(request.user.id).get_exams()
@@ -136,9 +138,10 @@ class Exams(ListAPIView):
         exams_ser = ExamListSerializer(result_page, many=True)
         return paginator.get_paginated_response(exams_ser.data)
 
+
 class CourseExams(ListAPIView):
     serializer_class = ExamListSerializer
-    permission_classes = (IsAuthenticated(), HasAccessToReadExams(), )
+    permission_classes = (IsAuthenticated, HasAccessToReadExams, )
 
     def list(self, request, *args, **kwargs):
         if not is_exist(kwargs['course_id']):
