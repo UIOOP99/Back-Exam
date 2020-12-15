@@ -54,7 +54,7 @@ class ExamViewSet(ModelViewSet):
         
     @swagger_auto_schema(tags=['exam'], responses={status.HTTP_400_BAD_REQUEST: """{
     "non_field_errors": ["this time have conflict with other exams"]} or\n
-    {"start_date": [ "start date must be less than now"], "end_date": ["end date must be less than start time and now"]} or\n ...""",
+    {"start_date": [ "start date must be more than now"], "end_date": ["end date must be more than start time and now"]} or\n ...""",
     status.HTTP_403_FORBIDDEN: '{ "detail": "You do not have permission to perform this action."}',
     status.HTTP_201_CREATED: ExamSerializer})
     def create(self, request, *args, **kwargs):

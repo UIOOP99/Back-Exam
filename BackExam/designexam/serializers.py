@@ -56,7 +56,7 @@ class ExamSerializer(serializers.ModelSerializer):
 
     def validate_start_date(self, value):
         if value <= timezone.now():
-            raise serializers.ValidationError('start date must be less than now')
+            raise serializers.ValidationError('start date must be more than now')
         return value
 
     def validate_end_date(self, value):
@@ -66,7 +66,7 @@ class ExamSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('the format of time is invalid')
 
         if value <= timezone.now() or value <= start_time:
-            raise serializers.ValidationError('end date must be less than start time and now')
+            raise serializers.ValidationError('end date must be more than start time and now')
 
         return value
 
@@ -94,7 +94,6 @@ class ExamSerializer(serializers.ModelSerializer):
         return attr 
 
     def update(self, instance, validated_data):
-        print(validated_data)
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description) 
         instance.author = validated_data.get('author', instance.author) 

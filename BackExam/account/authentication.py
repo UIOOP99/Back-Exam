@@ -19,6 +19,8 @@ pGnFD63N6W/889YAoZs=
 
     def authenticate(self, request):
         authorization_value = self.verify_header(self.get_auth_header(request))
+        if not authorization_value:
+            return None
         try:
             payload = self.get_payload(authorization_value[1])
         except jwt.exceptions.DecodeError:
@@ -31,7 +33,9 @@ pGnFD63N6W/889YAoZs=
         return self.get_user(payload), authorization_value[1]
 
     def verify_header(self, authorization_value: list):
-        if len(authorization_value) >= 3 or len(authorization_value) < 2:
+        if not authorization_value or len(authorization_value) == 0:
+            return None
+        if len(authorization_value) >= 3 or len(authorization_value) == 1:
             raise AuthenticationFailed("Invalid Authorization header")
 
         if authorization_value[0] != self.PREFIX.encode():
