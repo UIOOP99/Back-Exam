@@ -5,12 +5,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
-from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from drf_yasg.inspectors import DjangoRestResponsePagination
 
 from .models import Exam
 from account.models import User
@@ -26,6 +25,7 @@ class ExamViewSet(ModelViewSet):
     queryset = Exam.objects.all()
     permission_classes = [IsAuthenticated, ]
     serializer_class = ExamSerializer
+    parser_classes = [FormParser, MultiPartParser]
     http_method_names = ['get', 'delete', 'patch', 'post']
     
     def get_permissions(self):
@@ -52,11 +52,7 @@ class ExamViewSet(ModelViewSet):
         
         return permission
         
-    @swagger_auto_schema(tags=['exam'], responses={status.HTTP_400_BAD_REQUEST: """{
-    "non_field_errors": ["this time have conflict with other exams"]} or\n
-    {"start_date": [ "start date must be more than now"], "end_date": ["end date must be more than start time and now"]} or\n ...""",
-    status.HTTP_403_FORBIDDEN: '{ "detail": "You do not have permission to perform this action."}',
-    status.HTTP_201_CREATED: ExamSerializer})
+    @swagger_auto_schema(tags=['exam'])
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -78,13 +74,12 @@ class ExamViewSet(ModelViewSet):
 
     @swagger_auto_schema(tags=['exam'], 
     operation_description="""before the end_date can edit some fields. if the auther is ADMIN and the user.role is PROFESSOR, 
-    cann't set start_date and end_date in request.body . respose format = response of create format""")
+    cann't set start_date and end_date in request.body""")
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
-    @swagger_auto_schema(tags=['Exam File'], operation_description="sould upload a file {'questions_file': FILE}", 
-    request_body=ExamFileSerializer, responses={status.HTTP_201_CREATED: "", status.HTTP_400_BAD_REQUEST: """{
-    "questions_file": ["the format is invalid" or "the size of file is above of 10 MB" or this exam has questions]} """})
+    @swagger_auto_schema(tags=['Exam File'], operation_description="sould upload a file {'questions_file': FILE}", responses={201: ""},
+    request_body=ExamFileSerializer)
     @action(detail=True, methods=['post'])
     def create_file(self, request, pk):
         try:
