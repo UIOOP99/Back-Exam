@@ -19,6 +19,7 @@ pGnFD63N6W/889YAoZs=
 
     def authenticate(self, request):
         authorization_value = self.verify_header(self.get_auth_header(request))
+        #print(authorization_value)
         if not authorization_value:
             return None
         try:
@@ -27,20 +28,23 @@ pGnFD63N6W/889YAoZs=
             raise AuthenticationFailed("Invalid JWT")
         except jwt.exceptions.ExpiredSignatureError:
             raise AuthenticationFailed("The JWT is expired")
-        except:
-            raise AuthenticationFailed()
+        except Exception as e:
+            #raise AuthenticationFailed()
+            raise AuthenticationFailed(str(e))
 
         return self.get_user(payload), authorization_value[1]
 
     def verify_header(self, authorization_value: list):
         if not authorization_value or len(authorization_value) == 0:
             return None
+            #raise AuthenticationFailed("THIS IS TEST")
         if len(authorization_value) >= 3 or len(authorization_value) == 1:
             raise AuthenticationFailed("Invalid Authorization header")
 
         if authorization_value[0] != self.PREFIX.encode():
             raise AuthenticationFailed("Invalid Authorization header")
 
+        #raise AuthenticationFailed(str(authorization_value))
         return authorization_value
 
     def get_auth_header(self, request):

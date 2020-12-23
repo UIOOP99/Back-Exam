@@ -25,7 +25,7 @@ SECRET_KEY = '=dp0tf8bjm*%v#8bz&h)0u%*mv&g=jbe!8+c6%5zep7us)64$3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -159,10 +159,10 @@ GOLESTAN_SYSTEM_URL = "localhost:50053"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_URL = '/exam/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static2')]
 VENV_PATH = os.path.dirname(BASE_DIR)
-STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SWAGGER_SETTINGS = {
     'SHOW_REQUEST_HEADERS': True,
