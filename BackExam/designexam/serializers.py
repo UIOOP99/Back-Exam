@@ -12,11 +12,16 @@ from .models import Exam, DescriptiveQuestion, MultipleQuestion
 class ExamFileSerializer(serializers.Serializer):
     questions_file = serializers.FileField(write_only=True, allow_null=True)
 
-    def __init__(self, exam_id=1, *args, **kwargs):
+    def __init__(self, exam_id=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.exam_obj = Exam.objects.get(id = exam_id)
+        if exam_id is not None:
+            self.exam_obj = Exam.objects.get(id = exam_id)
+        else:
+            self.exam_obj = None
 
     def validate_questions_file(self, value):
+        if self.exam_obj is None:
+            raise serializers.ValidationError()
         if self.has_questions():
             raise serializers.ValidationError("this exam has questions")
 
