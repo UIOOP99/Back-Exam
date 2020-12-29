@@ -112,6 +112,16 @@ class ExamSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+    
+
+class PatchExamSerialier(ExamSerializer):
+    
+    def get_fields(self):
+        new_fields = openapi.OrderedDict()
+        for name, field in super().get_fields().items():
+            field.required = False
+            new_fields[name] = field
+        return new_fields
 
 
 

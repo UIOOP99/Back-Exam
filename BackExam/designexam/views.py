@@ -13,7 +13,7 @@ from drf_yasg import openapi
 
 from .models import Exam
 from account.models import User
-from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer
+from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer, PatchExamSerialier
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
     HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
 from client_process.file_management import delete_file, retrieve_file
@@ -74,7 +74,7 @@ class ExamViewSet(ModelViewSet):
 
     @swagger_auto_schema(tags=['exam'], 
     operation_description="""before the end_date can edit some fields. if the auther is ADMIN and the user.role is PROFESSOR, 
-    cann't set start_date and end_date in request.body""")
+    cann't set start_date and end_date in request.body""", request_body=PatchExamSerialier)
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
