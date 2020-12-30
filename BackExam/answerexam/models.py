@@ -13,7 +13,7 @@ class MultipleAnswer(models.Model):  # Students
 class DescriptiveAnswer(models.Model):  # Students
     descriptive_questionID = models.ForeignKey(DescriptiveQuestion, on_delete=models.CASCADE, blank=False)
     studentID = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)  # CharField(max_length=200)
-    file_URL = models.URLField(default=None)  # if teacher allow them
+    file_id =models.PositiveIntegerField(default=None, null=True)  # if teacher allow them
     text = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True, blank=False)
 
