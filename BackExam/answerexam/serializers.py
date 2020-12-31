@@ -83,3 +83,35 @@ class DescriptiveAnswerSerializer(serializers.ModelSerializer):
         return attr
 
 
+class MultipleAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MultipleAnswer
+        fields = ('answer_choice', 'studentID', 'multiple_questionID ', 'create_date')
+        read_only_fields = ('studentID', 'created_date')
+
+    def __init__(self, multiple_que_id=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.multipleQue_obj = MultipleQuestion.objects.get(id=multiple_que_id)
+        self.exam_obj = Exam.objects.get(id=self.multipleQue_obj.examID)
+
+    def validate_multiple_questionID(self, value):
+        try:
+            MultipleQuestion.objects.get(id=value)
+            return value
+        except:
+            return serializers.ValidationError('the question does not exist')
+
+    def validate_studentID(self, value):
+        try:
+            User.objects.get(id=value)
+            return value
+        except:
+            return serializers.ValidationError('the student does not exist')
+
+    def validate(self, attr):
+
+        if self.exam_obj.end_date < timezone.now():
+            raise serializers.ValidationError('time is over')
+
+        return attr
+
