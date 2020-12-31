@@ -52,6 +52,34 @@ class DescriptiveFileSerializer(serializers.Serializer):
         self.descriptiveAnswer_obj.save()
 
 
+class DescriptiveAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DescriptiveAnswer
+        fields = ('text', 'studentID', 'descriptive_questionID ', 'create_date')
+        read_only_fields = ('studentID', 'created_date')
 
+    def __init__(self, descriptive_que_id=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.descriptiveQue_obj = DescriptiveQuestion.objects.get(id=descriptive_que_id)
+        self.exam_obj = Exam.objects.get(id=self.descriptiveQue_obj.examID)
+
+    def validate_descriptive_questionID(self, value):
+        try:
+            DescriptiveQuestion.objects.get(id=value)
+            return value
+        except:
+            return serializers.ValidationError('the question does not exist')
+
+    def validate_studentID(self, value):
+        try:
+            User.objects.get(id=value)
+            return value
+        except:
+            return serializers.ValidationError('the student does not exist')
+
+    def validate(self, attr):
+        if self.exam_obj.end_date < timezone.now():
+            raise serializers.ValidationError('time is over')
+        return attr
 
 
