@@ -2,7 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns=[
-    path('descriptive_answer/', views.DescriptiveAnswerViewSet.as_view({
+    path('descriptive-answer/', views.DescriptiveAnswerViewSet.as_view({
+        'post': "create",
+    })),
+    path('multiple-answer/', views.DescriptiveAnswerViewSet.as_view({
         'post': "create",
     })),
     path('file/<int:pk>/', views.DescriptiveAnswerViewSet.as_view({
