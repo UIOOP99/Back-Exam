@@ -3,7 +3,7 @@ from django.utils import timezone
 from designexam.models import Exam, DescriptiveQuestion, MultipleQuestion
 from .models import DescriptiveAnswer, MultipleAnswer
 from client_process.file_management import create_file
-from accounts.models import User
+from account.models import User
 
 
 class DescriptiveFileSerializer(serializers.Serializer):
