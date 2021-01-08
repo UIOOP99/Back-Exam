@@ -15,7 +15,7 @@ class DescriptiveAnswerViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, ]
     queryset = DescriptiveAnswer.objects.all()
     http_method_names = ['get', 'post']
-    # lookup_url_kwarg = "que_id"
+
     # PERMISSIONS SHOULD BE WRITEN
 
     # swagger should be added
@@ -59,3 +59,26 @@ class DescriptiveAnswerViewSet(ModelViewSet):
         result = retrieve_file(des_answer.file_id)
         return Response(data={'url': result}, status=status.HTTP_200_OK)
         # return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class MultipleAnswerViewSet(ModelViewSet):
+    serializer_class = MultipleAnswerSerializer
+    permission_classes = [IsAuthenticated, ]
+    queryset = DescriptiveAnswer.objects.all()
+    http_method_names = ['post']
+
+    # PERMISSIONS SHOULD BE WRITEN
+
+    # swagger should be added
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    # swagger should be added
+    def perform_create(self, serializer):
+        answer = serializer.save()
+        answer.save()
+        serializer.save()
