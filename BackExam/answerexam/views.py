@@ -7,7 +7,7 @@ from .serializers import DescriptiveAnswerSerializer, MultipleAnswerSerializer, 
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import DescriptiveAnswer, MultipleAnswer
-from client_process.file_management import delete_file, retrieve_file
+from client_process.file_management import retrieve_file
 
 
 class DescriptiveAnswerViewSet(ModelViewSet):
