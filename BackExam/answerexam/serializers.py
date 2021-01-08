@@ -58,10 +58,14 @@ class DescriptiveAnswerSerializer(serializers.ModelSerializer):
         fields = ('text', 'studentID', 'descriptive_questionID ', 'create_date')
         read_only_fields = ('studentID', 'created_date')
 
-    def __init__(self, descriptive_que_id=1, *args, **kwargs):
+    def __init__(self, descriptive_que_id=None, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
-        self.descriptiveQue_obj = DescriptiveQuestion.objects.get(id=descriptive_que_id)
-        self.exam_obj = Exam.objects.get(id=self.descriptiveQue_obj.examID)
+        if descriptive_que_id is not None:
+            self.descriptiveQue_obj = DescriptiveQuestion.objects.get(id=descriptive_que_id)
+            self.exam_obj = Exam.objects.get(id=self.descriptiveQue_obj.examID)
+        else:
+            self.descriptiveQue_obj = None
 
     def validate_descriptive_questionID(self, value):
         try:
@@ -89,10 +93,14 @@ class MultipleAnswerSerializer(serializers.ModelSerializer):
         fields = ('answer_choice', 'studentID', 'multiple_questionID ', 'create_date')
         read_only_fields = ('studentID', 'created_date')
 
-    def __init__(self, multiple_que_id=1, *args, **kwargs):
+    def __init__(self, multiple_que_id=None, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
-        self.multipleQue_obj = MultipleQuestion.objects.get(id=multiple_que_id)
-        self.exam_obj = Exam.objects.get(id=self.multipleQue_obj.examID)
+        if multiple_que_id is not None:
+            self.multipleQue_obj = MultipleQuestion.objects.get(id=multiple_que_id)
+            self.exam_obj = Exam.objects.get(id=self.multipleQue_obj.examID)
+        else:
+            self.multipleQue_obj = None
 
     def validate_multiple_questionID(self, value):
         try:

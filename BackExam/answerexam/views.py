@@ -20,7 +20,7 @@ class DescriptiveAnswerViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, descriptive_que_id=request.data['descriptive_questionID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -71,7 +71,9 @@ class MultipleAnswerViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data,
+                                         multiple_que_id=request.data['multiple_questionID']
+                                         )
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
