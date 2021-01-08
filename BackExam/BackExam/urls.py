@@ -37,8 +37,10 @@ urlpatterns = [
     path('exam/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('exam/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('exam/design-exam/', include('designexam.urls')),
+    path('exam/answer-exam/', include('answerexam.urls')),
 
 ]
+
 
 def grpc_handlers(server):
     user_pb2_grpc.add_UserControllerServicer_to_server(UserService.as_servicer(), server)
