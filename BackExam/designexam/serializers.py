@@ -208,7 +208,7 @@ class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         quefile = DescriptiveQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
-                                                         file_id=create_file(self.file))
+                                                         file_id=self.save_file())
         return quefile.id
 
 
@@ -250,5 +250,5 @@ class MultipleQuestionFileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         quefile = MultipleQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
-                                                      file_id=create_file(self.file))
+                                                      file_id=self.save_file())
         return quefile.id
