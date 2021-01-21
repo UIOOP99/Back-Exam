@@ -26,11 +26,11 @@ class DescriptiveQuestion(models.Model):  # Teachers
 
 class MultipleQuestion(models.Model):  # Teachers
     examID = models.ForeignKey(Exam, on_delete=models.CASCADE, blank=False)
-    text = models.TextField(default=False)
+    text = models.TextField()
     mark = models.FloatField(default=0, blank=False)
     number = models.IntegerField(unique=True)
     answer = models.CharField(max_length=10)  # string of 0 & 1 that 0 is for False and 1 is for True
-    options_text = models.JSONField()  # the text of each option
+    options_text = models.TextField() # the text of each option
 
 
 class DescriptiveQuestionFile(models.Model):  # Teachers
