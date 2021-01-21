@@ -6,7 +6,7 @@ from django.utils import timezone
 from drf_yasg.utils import swagger_serializer_method
 from drf_yasg import openapi
 from .exam_extra_classes.check_conflict import ExamConflictChecker
-from .models import Exam, DescriptiveQuestion, MultipleQuestion
+from .models import Exam, DescriptiveQuestion, MultipleQuestion, DescriptiveQuestionFile, MultipleQuestionFile
 
 
 class ExamFileSerializer(serializers.Serializer):
@@ -114,7 +114,6 @@ class ExamSerializer(serializers.ModelSerializer):
         return instance
 
 
-
 class ExamListSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField('set_status')
 
@@ -132,8 +131,124 @@ class ExamListSerializer(serializers.ModelSerializer):
             return 'holding'
 
 
+class DescriptiveQuestionSerializer(serializers.ModelSerializer):
 
-    
+    class Meta:
+        model = DescriptiveQuestion
+        fields = '__all__'
+
+    def validate_number(self, value):
+        try:
+            des = DescriptiveQuestion.objects.filter(number=value)
+            raise serializers.ValidationError("the question number is a duplicate")
+        except:
+            pass
+
+    def validate_examID(self, value):
+        try:
+            exam = Exam.objects.filter(examID=value)
+        except:
+            raise serializers.ValidationError("the exam does not exist")
 
 
-    
+class MultipleQuestionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MultipleQuestion
+        fields = '__all__'
+
+    def validate_number(self, value):
+        try:
+            mul = MultipleQuestion.objects.filter(number=value)
+            raise serializers.ValidationError("the question number is duplicate")
+        except:
+            pass
+
+    def validate_examID(self, value):
+        try:
+            exam = Exam.objects.filter(examID=value)
+        except:
+            raise serializers.ValidationError("the exam does not exist")
+
+
+class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
+    question_file = serializers.FileField(write_only=True, allow_null=True)
+
+    class Meta:
+        model = DescriptiveQuestionFile
+        fields = '__all__'
+
+    def __init__(self, descriptive_que_id=None, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        if descriptive_que_id is not None:
+            self.descriptiveQue_obj = DescriptiveQuestion.objects.get(id=descriptive_que_id)
+        else:
+            self.descriptiveQue_obj= None
+
+    def validate_question_file(self, value):
+        if self.descriptiveQue_obj is None:
+            raise serializers.ValidationError("this question does not exist")
+
+        file = value
+        if file.content_type not in ['application/pdf', ]:
+            raise serializers.ValidationError("the format is invalid")
+
+        if file.size > 10485760:
+            raise serializers.ValidationError("the size of file is above of 10 MB")
+
+        if Exam.objects.filter(examID=self.descriptiveQue_obj.examID).setting:
+            raise serializers.ValidationError("this exam has a file containing all the questions")
+
+        self.file = file
+        return file
+
+    def save_file(self):
+        return create_file(self.file)
+
+    def create(self, validated_data):
+        quefile = DescriptiveQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
+                                                         file_id=create_file(self.file))
+        return quefile.id
+
+
+class MultipleQuestionFileSerializer(serializers.ModelSerializer):
+
+    question_file = serializers.FileField(write_only=True, allow_null=True)
+
+    class Meta:
+        model = MultipleQuestionFile
+        fields = '__all__'
+
+    def __init__(self, multiple_que_id=None, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        if multiple_que_id is not None:
+            self.multipleQue_obj = MultipleQuestion.objects.get(id=multiple_que_id)
+        else:
+            self.multipleQue_obj= None
+
+    def validate_question_file(self, value):
+        if self.multipleQue_obj is None:
+            raise serializers.ValidationError("this question does not exist")
+
+        file = value
+        if file.content_type not in ['application/pdf', ]:
+            raise serializers.ValidationError("the format is invalid")
+
+        if file.size > 10485760:
+            raise serializers.ValidationError("the size of file is above of 10 MB")
+
+        if Exam.objects.filter(examID=self.multipleQue_obj.examID).setting:
+            raise serializers.ValidationError("this exam has a file containing all the questions")
+
+        self.file = file
+        return file
+
+    def save_file(self):
+        return create_file(self.file)
+
+    def create(self, validated_data):
+        quefile = MultipleQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
+                                                      file_id=create_file(self.file))
+        return quefile.id
