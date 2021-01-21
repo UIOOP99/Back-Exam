@@ -11,9 +11,12 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from .models import Exam
+from .models import Exam, DescriptiveQuestion, MultipleQuestion,\
+    DescriptiveQuestionFile, MultipleQuestionFile
 from account.models import User
-from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer
+from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer,\
+    DescriptiveQuestionSerializer, DescriptiveQuestionFileSerializer,\
+    MultipleQuestionSerializer, MultipleQuestionFileSerializer
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
     HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
 from client_process.file_management import delete_file, retrieve_file
@@ -149,4 +152,109 @@ class CourseExams(ListAPIView):
         return paginator.get_paginated_response(exams_ser.data)
     
 
-    
+class DescriptiveQuestionViewSet(ModelViewSet):
+    serializer_class = DescriptiveQuestionSerializer
+    permission_classes = [IsAuthenticated, ]
+    queryset = DescriptiveQuestion.objects.all()
+    http_method_names = ['get', 'post']
+
+    # PERMISSIONS SHOULD BE WRITEN
+
+    # swagger should be added
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    # swagger should be added
+    def perform_create(self, serializer):
+        des_question = serializer.save()
+        des_question.save()
+        # serializer.save()
+
+    # swagger should be added
+    @action(detail=True, methods=['post'])
+    def create_file(self, request, pk):
+        try:
+            des_que= DescriptiveQuestion.objects.get(pk=pk)
+        except DescriptiveQuestion.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        file_serializer = DescriptiveQuestionFileSerializer(data=request.data,
+                                                            descriptive_que_id=pk)
+        if file_serializer.is_valid():
+            file_serializer.create()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # swagger should be added
+    @action(detail=True, methods=['get'])
+    def get_file_url(self, request, pk):
+        try:
+            des_que = DescriptiveQuestion.objects.get(pk=pk)
+        except DescriptiveQuestion.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            que_files_list= DescriptiveQuestionFile.objects.filter(
+                descriptive_questionID=pk).values_list('file_id', flat=True)
+            result = []
+            for a in que_files_list:
+                result.append(retrieve_file(a))
+            return Response(data={'url': result}, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class MultipleQuestionViewSet(ModelViewSet):
+    serializer_class = MultipleQuestionSerializer
+    permission_classes = [IsAuthenticated, ]
+    queryset = MultipleQuestion.objects.all()
+    http_method_names = ['get', 'post']
+
+    # PERMISSIONS SHOULD BE WRITEN
+
+    # swagger should be added
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    # swagger should be added
+    def perform_create(self, serializer):
+        mul_question = serializer.save()
+        mul_question.save()
+        # serializer.save()
+
+    # swagger should be added
+    @action(detail=True, methods=['post'])
+    def create_file(self, request, pk):
+        try:
+            mul_que= MultipleQuestion.objects.get(pk=pk)
+        except MultipleQuestion.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        file_serializer = MultipleQuestionFileSerializer(data=request.data,
+                                                         multiple_que_id=pk)
+        if file_serializer.is_valid():
+            file_serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # swagger should be added
+    @action(detail=True, methods=['get'])
+    def get_file_url(self, request, pk):
+        try:
+            mul_que = MultipleQuestion.objects.get(pk=pk)
+        except MultipleQuestion.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            mul_files_list = MultipleQuestionFile.objects.filter(
+                multiple_questionID=pk).values_list('file_id', flat=True)
+            result = []
+            for a in mul_files_list:
+                result.append(retrieve_file(a))
+            return Response(data={'url': result}, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
