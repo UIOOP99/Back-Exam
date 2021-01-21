@@ -35,9 +35,9 @@ class MultipleQuestion(models.Model):  # Teachers
 
 class DescriptiveQuestionFile(models.Model):  # Teachers
     descriptive_questionID = models.ForeignKey(DescriptiveQuestion, on_delete=models.CASCADE, blank=False)
-    file_URL = models.URLField(default=None)
+    file_id = models.PositiveIntegerField(default=None, null=True)
 
 
 class MultipleQuestionFile(models.Model):  # Teachers
     multiple_questionID = models.ForeignKey(MultipleQuestion, on_delete=models.CASCADE, blank=False)
-    file_URL = models.URLField(default=None)
+    file_id = models.PositiveIntegerField(default=None, null=True)
