@@ -252,3 +252,15 @@ class MultipleQuestionFileSerializer(serializers.ModelSerializer):
         quefile = MultipleQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
                                                       file_id=self.save_file())
         return quefile.id
+
+
+class DescriptiveQuestionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DescriptiveQuestion
+        fields = '__all__'
+
+
+class MultipleQuestionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MultipleQuestion
+        fields = '__all__'
