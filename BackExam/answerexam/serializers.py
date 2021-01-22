@@ -67,19 +67,19 @@ class DescriptiveAnswerSerializer(serializers.ModelSerializer):
         else:
             self.descriptiveQue_obj = None
 
-    def validate_descriptive_questionID(self, value):
-        try:
-            DescriptiveQuestion.objects.get(id=value)
-            return value
-        except:
-            return serializers.ValidationError('the question does not exist')
+    # def validate_descriptive_questionID(self, value):
+    #     try:
+    #         DescriptiveQuestion.objects.get(id=value)
+    #         return value
+    #     except:
+    #         return serializers.ValidationError('the question does not exist')
 
-    def validate_studentID(self, value):
-        try:
-            User.objects.get(id=value)
-            return value
-        except:
-            return serializers.ValidationError('the student does not exist')
+    # def validate_studentID(self, value):
+    #     try:
+    #         User.objects.get(id=value)
+    #         return value
+    #     except:
+    #         return serializers.ValidationError('the student does not exist')
 
     def validate(self, attr):
         if self.exam_obj.end_date < timezone.now():
@@ -102,19 +102,19 @@ class MultipleAnswerSerializer(serializers.ModelSerializer):
         else:
             self.multipleQue_obj = None
 
-    def validate_multiple_questionID(self, value):
-        try:
-            MultipleQuestion.objects.get(id=value)
-            return value
-        except:
-            return serializers.ValidationError('the question does not exist')
+    # def validate_multiple_questionID(self, value):
+    #     try:
+    #         MultipleQuestion.objects.get(id=value)
+    #         return value
+    #     except:
+    #         return serializers.ValidationError('the question does not exist')
 
-    def validate_studentID(self, value):
-        try:
-            User.objects.get(id=value)
-            return value
-        except:
-            return serializers.ValidationError('the student does not exist')
+    # def validate_studentID(self, value):
+    #     try:
+    #         User.objects.get(id=value)
+    #         return value
+    #     except:
+    #         return serializers.ValidationError('the student does not exist')
 
     def validate(self, attr):
 

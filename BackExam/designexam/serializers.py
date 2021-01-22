@@ -137,18 +137,18 @@ class DescriptiveQuestionSerializer(serializers.ModelSerializer):
         model = DescriptiveQuestion
         fields = '__all__'
 
-    def validate_number(self, value):
-        try:
-            des = DescriptiveQuestion.objects.filter(number=value)
-            raise serializers.ValidationError("the question number is a duplicate")
-        except:
-            pass
+    # def validate_number(self, value):
+    #     try:
+    #         des = DescriptiveQuestion.objects.filter(number=value)
+    #         raise serializers.ValidationError("the question number is a duplicate")
+    #     except:
+    #         pass
 
-    def validate_examID(self, value):
-        try:
-            exam = Exam.objects.filter(examID=value)
-        except:
-            raise serializers.ValidationError("the exam does not exist")
+    # def validate_examID(self, value):
+    #     try:
+    #         exam = Exam.objects.filter(pk=value)
+    #     except:
+    #         raise serializers.ValidationError("the exam does not exist")
 
 
 class MultipleQuestionSerializer(serializers.ModelSerializer):
@@ -157,18 +157,18 @@ class MultipleQuestionSerializer(serializers.ModelSerializer):
         model = MultipleQuestion
         fields = '__all__'
 
-    def validate_number(self, value):
-        try:
-            mul = MultipleQuestion.objects.filter(number=value)
-            raise serializers.ValidationError("the question number is duplicate")
-        except:
-            pass
-
-    def validate_examID(self, value):
-        try:
-            exam = Exam.objects.filter(examID=value)
-        except:
-            raise serializers.ValidationError("the exam does not exist")
+    # def validate_number(self, value):
+    #     try:
+    #         mul = MultipleQuestion.objects.filter(number=value)
+    #         raise serializers.ValidationError("the question number is duplicate")
+    #     except:
+    #         pass
+    #
+    # def validate_examID(self, value):
+    #     try:
+    #         exam = Exam.objects.filter(examID=value)
+    #     except:
+    #         raise serializers.ValidationError("the exam does not exist")
 
 
 class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):

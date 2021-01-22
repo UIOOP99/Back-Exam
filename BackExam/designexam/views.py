@@ -266,17 +266,17 @@ class DescriptiveQuestions(ListAPIView):
     permission_classes = (IsAuthenticated, )
 
     def list(self, request, *args, **kwargs):
-        try:
-            exam_pk = kwargs['pk']
-            exam = Exam.objects.get(pk=exam_pk)
-            ques = DescriptiveQuestion.objects.filter(examID=exam_pk)
-            paginator = PageNumberPagination()
-            paginator.page_size = 20
-            result_page = paginator.paginate_queryset(ques, request)
-            desques_ser = DescriptiveQuestionListSerializer(result_page, many=True)
-            return paginator.get_paginated_response(desques_ser.data)
-        except Exam.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        # try:
+        #     exam_pk = kwargs['pk']
+        #     exam = Exam.objects.get(pk=exam_pk)
+        ques = DescriptiveQuestion.objects.filter(examID=kwargs['pk'])
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        result_page = paginator.paginate_queryset(ques, request)
+        desques_ser = DescriptiveQuestionListSerializer(result_page, many=True)
+        return paginator.get_paginated_response(desques_ser.data)
+        # except Exam.DoesNotExist:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class MultipleQuestions(ListAPIView):
