@@ -27,7 +27,10 @@ urlpatterns=[
         "post": "create_file",
         "get": "get_file_url"})),
 
-    path('descriptive-question/file/<int:pk>/', views.MultipleQuestionViewSet.as_view({
+    path('multiple-question/file/<int:pk>/', views.MultipleQuestionViewSet.as_view({
         "post": "create_file",
         "get": "get_file_url"})),
+
+    path("descriptive-question/<int:pk>/", views.DescriptiveQuestions.as_view()),
+    path("multiple-question/<int:pk>/", views.MultipleQuestions.as_view()),
 ]
