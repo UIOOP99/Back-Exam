@@ -16,7 +16,8 @@ from .models import Exam, DescriptiveQuestion, MultipleQuestion,\
 from account.models import User
 from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer,\
     DescriptiveQuestionSerializer, DescriptiveQuestionFileSerializer,\
-    MultipleQuestionSerializer, MultipleQuestionFileSerializer
+    MultipleQuestionSerializer, MultipleQuestionFileSerializer,\
+    MultipleQuestionListSerializer, DescriptiveQuestionListSerializer
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
     HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
 from client_process.file_management import delete_file, retrieve_file
@@ -257,4 +258,40 @@ class MultipleQuestionViewSet(ModelViewSet):
                 result.append(retrieve_file(a))
             return Response(data={'url': result}, status=status.HTTP_200_OK)
         except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class DescriptiveQuestions(ListAPIView):
+    serializer_class = DescriptiveQuestionListSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def list(self, request, *args, **kwargs):
+        try:
+            exam_pk = kwargs['pk']
+            exam = Exam.objects.get(pk=exam_pk)
+            ques = DescriptiveQuestion.objects.filter(examID=exam_pk)
+            paginator = PageNumberPagination()
+            paginator.page_size = 20
+            result_page = paginator.paginate_queryset(ques, request)
+            desques_ser = DescriptiveQuestionListSerializer(result_page, many=True)
+            return paginator.get_paginated_response(desques_ser.data)
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class MultipleQuestions(ListAPIView):
+    serializer_class = MultipleQuestionListSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def list(self, request, *args, **kwargs):
+        try:
+            exam_pk = kwargs['pk']
+            exam = Exam.objects.get(pk=exam_pk)
+            ques = MultipleQuestion.objects.filter(examID=exam_pk)
+            paginator = PageNumberPagination()
+            paginator.page_size = 20
+            result_page = paginator.paginate_queryset(ques, request)
+            mulques_ser = MultipleQuestionListSerializer(result_page, many=True)
+            return paginator.get_paginated_response(mulques_ser.data)
+        except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
