@@ -10,14 +10,16 @@ from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from operator import attrgetter
+from itertools import chain
 
 from .models import Exam, DescriptiveQuestion, MultipleQuestion,\
     DescriptiveQuestionFile, MultipleQuestionFile
 from account.models import User
 from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer,\
     DescriptiveQuestionSerializer, DescriptiveQuestionFileSerializer,\
-    MultipleQuestionSerializer, MultipleQuestionFileSerializer,\
-    MultipleQuestionListSerializer, DescriptiveQuestionListSerializer
+    MultipleQuestionSerializer, MultipleQuestionFileSerializer
+    # MultipleQuestionListSerializer, DescriptiveQuestionListSerializer
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
     HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
 from client_process.file_management import delete_file, retrieve_file
@@ -260,7 +262,15 @@ class MultipleQuestionViewSet(ModelViewSet):
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def  questions_list(request, pk):
+    q1 = MultipleQuestion.objects.filter(examID=pk).values('examID', 'text', 'mark', 'number', 'answer', 'options_text')
+    q2 = DescriptiveQuestion.objects.filter(examID=pk).values('examID', 'text', 'mark', 'number', 'setting')
+    result_list = list(chain(q1, q2))
+    return Response(data={'list': result_list}, status=status.HTTP_200_OK)
 
+''''
 class DescriptiveQuestions(ListAPIView):
     serializer_class = DescriptiveQuestionListSerializer
     permission_classes = (IsAuthenticated, )
@@ -295,3 +305,5 @@ class MultipleQuestions(ListAPIView):
             return paginator.get_paginated_response(mulques_ser.data)
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+'''''

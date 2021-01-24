@@ -254,13 +254,13 @@ class MultipleQuestionFileSerializer(serializers.Serializer):
         return quefile.id
 
 
-class DescriptiveQuestionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DescriptiveQuestion
-        fields = '__all__'
-
-
-class MultipleQuestionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MultipleQuestion
-        fields = '__all__'
+# class DescriptiveQuestionListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = DescriptiveQuestion
+#         fields = '__all__'
+#
+#
+# class MultipleQuestionListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = MultipleQuestion
+#         fields = '__all__'
