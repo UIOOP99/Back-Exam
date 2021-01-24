@@ -12,8 +12,11 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from .models import Result
-from .serializers import ResultSerializer
+from account.models import User
+from designexam.models import Exam
+from .serializers import ResultSerializer, ResultExamListSerializer, ResultUserListSerializer
 from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess
+from .utility.query import get_users, get_exams
 
 
 class ResultViewSet(ModelViewSet):
@@ -41,17 +44,46 @@ class ResultViewSet(ModelViewSet):
 
 
 class ResultExamList(ListAPIView):
-    
+    serializer_class = ResultExamListSerializer
     permission_classes = (IsAuthenticated, )
 
     def list(self, request, *args, **kwargs):
-        pass
+        if not is_exist(kwargs['exam-id']):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            exam = Exam.objects.get(pk=kwargs['exam-id'])
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ResultStudent(ListAPIView):
+        users = get_users(exam.id)
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        result_page = paginator.paginate_queryset(users, request)
+        users_ser = ResultExamListSerializer(result_page, many=True, exam_id=exam.id)
+        return paginator.get_paginated_response(users_ser.data)
 
+           
+
+class ResultStudentList(ListAPIView):
+    serializer_class = ResultUserListSerializer
     permission_classes = (IsAuthenticated, )
 
     def list(self, request, *args, **kwargs):
-        pass
+        if not is_exist(kwargs['student-id']):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            user = User.objects.get(pk=kwargs['stusent-id'])
+            if usre.role != "STUDENT":
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        exams = get_exams(user.id)
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        result_page = paginator.paginate_queryset(exams, request)
+        exam_ser = ResultUserListSerializer(
+            result_page, many=True, student_id=user.id)
+        return paginator.get_paginated_response(exam_ser.data)
 
 
