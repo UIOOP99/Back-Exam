@@ -185,7 +185,7 @@ class DescriptiveQuestionViewSet(ModelViewSet):
         file_serializer = DescriptiveQuestionFileSerializer(data=request.data,
                                                             descriptive_que_id=pk)
         if file_serializer.is_valid():
-            file_serializer.create()
+            file_serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

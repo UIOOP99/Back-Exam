@@ -171,12 +171,12 @@ class MultipleQuestionSerializer(serializers.ModelSerializer):
     #         raise serializers.ValidationError("the exam does not exist")
 
 
-class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
+class DescriptiveQuestionFileSerializer(serializers.Serializer):
     question_file = serializers.FileField(write_only=True, allow_null=True)
 
-    class Meta:
-        model = DescriptiveQuestionFile
-        fields = '__all__'
+    # class Meta:
+    #     model = DescriptiveQuestionFile
+    #     fields = []
 
     def __init__(self, descriptive_que_id=None, *args, **kwargs):
 
@@ -197,7 +197,7 @@ class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
         if file.size > 10485760:
             raise serializers.ValidationError("the size of file is above of 10 MB")
 
-        if Exam.objects.filter(examID=self.descriptiveQue_obj.examID).setting:
+        if Exam.objects.get(pk=self.descriptiveQue_obj.examID.id).setting:
             raise serializers.ValidationError("this exam has a file containing all the questions")
 
         self.file = file
@@ -207,18 +207,18 @@ class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
         return create_file(self.file)
 
     def create(self, validated_data):
-        quefile = DescriptiveQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
+        quefile = DescriptiveQuestionFile.objects.create(descriptive_questionID=self.descriptiveQue_obj,
                                                          file_id=self.save_file())
         return quefile.id
 
 
-class MultipleQuestionFileSerializer(serializers.ModelSerializer):
+class MultipleQuestionFileSerializer(serializers.Serializer):
 
     question_file = serializers.FileField(write_only=True, allow_null=True)
 
-    class Meta:
-        model = MultipleQuestionFile
-        fields = '__all__'
+    # class Meta:
+    #     model = MultipleQuestionFile
+    #     fields = []
 
     def __init__(self, multiple_que_id=None, *args, **kwargs):
 
@@ -239,7 +239,7 @@ class MultipleQuestionFileSerializer(serializers.ModelSerializer):
         if file.size > 10485760:
             raise serializers.ValidationError("the size of file is above of 10 MB")
 
-        if Exam.objects.filter(examID=self.multipleQue_obj.examID).setting:
+        if Exam.objects.get(pk=self.multipleQue_obj.examID.id).setting:
             raise serializers.ValidationError("this exam has a file containing all the questions")
 
         self.file = file
@@ -249,7 +249,7 @@ class MultipleQuestionFileSerializer(serializers.ModelSerializer):
         return create_file(self.file)
 
     def create(self, validated_data):
-        quefile = MultipleQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
+        quefile = MultipleQuestionFile.objects.create(multiple_questionID=self.multipleQue_obj,
                                                       file_id=self.save_file())
         return quefile.id
 
