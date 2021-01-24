@@ -38,6 +38,7 @@ urlpatterns = [
     path('exam/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('exam/design-exam/', include('designexam.urls')),
     path('exam/answer-exam/', include('answerexam.urls')),
+    path('exam/result/', include('result.urls')),
 
 ]
 

@@ -1,11 +1,8 @@
 from django.db import models
-from designexam.models import Exam
 
 
 class Result(models.Model):
-    exam = models.ForeignKey(Exam, null=False, on_delete=models.CASCADE)
-    score = models.FloatField(null=False)
+    answer_id = models.PositiveIntegerField(null=False)
+    mark = models.FloatField(null=False)
     types = (('Descriptive', 'Descriptive'), ('Multiple', 'Multiple'))
-    question_type = models.CharField(choices=types, null=True)
-    
-
+    question_type = models.CharField(choices=types, null=False)
