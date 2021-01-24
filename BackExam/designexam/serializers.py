@@ -137,12 +137,16 @@ class DescriptiveQuestionSerializer(serializers.ModelSerializer):
         model = DescriptiveQuestion
         fields = '__all__'
 
-    # def validate_number(self, value):
-    #     try:
-    #         des = DescriptiveQuestion.objects.filter(number=value)
-    #         raise serializers.ValidationError("the question number is a duplicate")
-    #     except:
-    #         pass
+    def __init__(self, examID=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exam = Exam.objects.get(id=examID)
+
+    def validate_number(self, value):
+        des2 = DescriptiveQuestion.objects.filter(number=value, examID=self.exam)
+        mul2 = MultipleQuestion.objects.filter(number=value, examID=self.exam)
+        if len(mul2) != 0 or len(des2) != 0:
+            raise serializers.ValidationError("the question number is a duplicate")
+        return value
 
     # def validate_examID(self, value):
     #     try:
@@ -157,13 +161,16 @@ class MultipleQuestionSerializer(serializers.ModelSerializer):
         model = MultipleQuestion
         fields = '__all__'
 
-    # def validate_number(self, value):
-    #     try:
-    #         mul = MultipleQuestion.objects.filter(number=value)
-    #         raise serializers.ValidationError("the question number is duplicate")
-    #     except:
-    #         pass
-    #
+    def __init__(self, examID=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exam = Exam.objects.get(id=examID)
+
+    def validate_number(self, value):
+        des2 = DescriptiveQuestion.objects.filter(number=value, examID=self.exam)
+        mul2 = MultipleQuestion.objects.filter(number=value,  examID=self.exam)
+        if len(mul2) != 0 or len(des2) != 0:
+            raise serializers.ValidationError("the question number is a duplicate")
+        return value
     # def validate_examID(self, value):
     #     try:
     #         exam = Exam.objects.filter(examID=value)

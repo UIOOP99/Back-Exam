@@ -165,7 +165,11 @@ class DescriptiveQuestionViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        try:
+            exam = Exam.objects.get(pk=request.data['examID'])
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(data=request.data, examID=request.data['examID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -219,7 +223,11 @@ class MultipleQuestionViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        try:
+            exam = Exam.objects.get(pk=request.data['examID'])
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(data=request.data, examID=request.data['examID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
