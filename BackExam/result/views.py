@@ -13,6 +13,7 @@ from drf_yasg import openapi
 
 from .models import Result
 from .serializers import ResultSerializer
+from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess
 
 
 class ResultViewSet(ModelViewSet):
@@ -22,12 +23,27 @@ class ResultViewSet(ModelViewSet):
     parser_classes = [FormParser, MultiPartParser]
     http_method_names = ['get', 'delete', 'patch', 'post']
 
+    def get_permissions(self):
+        if self.action == "create":
+            permission = (IsAuthenticated(), HasCreateAccess(), )
+
+        elif self.action == "partial_update" or self.action == "destroy":
+            permission = (IsAuthenticated(), HasUpdateDeleteAccess() )
+
+        elif self.action == "retrieve":
+            permission = (IsAuthenticated(), HasReadAccess() )
+
+        else:
+            permission = (IsAuthenticated(), )
+
+        return permission
+
 
 
 class ResultExamList(ListAPIView):
     
     permission_classes = (IsAuthenticated, )
-    
+
     def list(self, request, *args, **kwargs):
         pass
 
