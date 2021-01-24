@@ -15,7 +15,7 @@ from .models import Result
 from account.models import User
 from designexam.models import Exam
 from .serializers import ResultSerializer, ResultExamListSerializer, ResultUserListSerializer
-from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess
+from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess, HasResultsStudentAccess, HasResultsExamAccess
 from .utility.query import get_users, get_exams
 
 
@@ -45,13 +45,13 @@ class ResultViewSet(ModelViewSet):
 
 class ResultExamList(ListAPIView):
     serializer_class = ResultExamListSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, HasResultsExamAccess(), )
 
     def list(self, request, *args, **kwargs):
-        if not is_exist(kwargs['exam-id']):
+        if not is_exist(kwargs['exam_id']):
             return Response(status=status.HTTP_404_NOT_FOUND)
         try:
-            exam = Exam.objects.get(pk=kwargs['exam-id'])
+            exam = Exam.objects.get(pk=kwargs['exam_id'])
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -66,13 +66,13 @@ class ResultExamList(ListAPIView):
 
 class ResultStudentList(ListAPIView):
     serializer_class = ResultUserListSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, HasResultsStudentAccess(), )
 
     def list(self, request, *args, **kwargs):
-        if not is_exist(kwargs['student-id']):
+        if not is_exist(kwargs['student_id']):
             return Response(status=status.HTTP_404_NOT_FOUND)
         try:
-            user = User.objects.get(pk=kwargs['stusent-id'])
+            user = User.objects.get(pk=kwargs['stusent_id'])
             if usre.role != "STUDENT":
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
