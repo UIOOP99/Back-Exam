@@ -3,6 +3,7 @@ from rest_framework import status, generics
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from .serializers import DescriptiveAnswerSerializer, MultipleAnswerSerializer, DescriptiveFileSerializer
+from designexam.models import Exam, DescriptiveQuestion, MultipleQuestion
 # Create your views here.
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -21,10 +22,10 @@ class DescriptiveAnswerViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        # # _mutable = request.data._mutable
-        # request.data._mutable = True
-        # request.data['studentID'] = request.user.id
-        # # request.data._mutable = _mutable
+        try:
+            des_que = DescriptiveQuestion.objects.get(pk=pk)
+        except DescriptiveQuestion.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(data=request.data, descriptive_que_id=request.data['descriptive_questionID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -76,9 +77,10 @@ class MultipleAnswerViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        # _mutable = request.data._mutable
-        # request.data['studentID'] = request.user.id
-        # request.data._mutable = _mutable
+        try:
+            mul_que = MultipleQuestion.objects.get(pk=pk)
+        except MultipleQuestion.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(data=request.data,
                                          multiple_que_id=request.data['multiple_questionID']
                                          )
