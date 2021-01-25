@@ -23,7 +23,7 @@ class DescriptiveAnswerViewSet(ModelViewSet):
     # swagger should be added
     def create(self, request, *args, **kwargs):
         try:
-            des_que = DescriptiveQuestion.objects.get(pk=pk)
+            des_que = DescriptiveQuestion.objects.get(pk=request.data['multiple_questionID'])
         except DescriptiveQuestion.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(data=request.data, descriptive_que_id=request.data['descriptive_questionID'])
@@ -78,7 +78,7 @@ class MultipleAnswerViewSet(ModelViewSet):
     # swagger should be added
     def create(self, request, *args, **kwargs):
         try:
-            mul_que = MultipleQuestion.objects.get(pk=pk)
+            mul_que = MultipleQuestion.objects.get(pk=request.data['multiple_questionID'])
         except MultipleQuestion.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(data=request.data,
