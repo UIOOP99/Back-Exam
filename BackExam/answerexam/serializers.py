@@ -55,15 +55,15 @@ class DescriptiveFileSerializer(serializers.Serializer):
 class DescriptiveAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = DescriptiveAnswer
-        fields = ('text', 'studentID', 'descriptive_questionID ', 'create_date')
-        read_only_fields = ('studentID', 'created_date')
+        fields = ('text', 'studentID', 'descriptive_questionID', 'created_date')
+        read_only_fields = ('created_date',)
 
     def __init__(self, descriptive_que_id=None, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
         if descriptive_que_id is not None:
             self.descriptiveQue_obj = DescriptiveQuestion.objects.get(id=descriptive_que_id)
-            self.exam_obj = Exam.objects.get(id=self.descriptiveQue_obj.examID)
+            self.exam_obj = Exam.objects.get(id=self.descriptiveQue_obj.examID.id)
         else:
             self.descriptiveQue_obj = None
 
@@ -90,15 +90,15 @@ class DescriptiveAnswerSerializer(serializers.ModelSerializer):
 class MultipleAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MultipleAnswer
-        fields = ('answer_choice', 'studentID', 'multiple_questionID ', 'create_date')
-        read_only_fields = ('studentID', 'created_date')
+        fields = ('answer_choice', 'studentID', 'multiple_questionID', 'created_date')
+        read_only_fields = ('created_date',)
 
     def __init__(self, multiple_que_id=None, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
         if multiple_que_id is not None:
             self.multipleQue_obj = MultipleQuestion.objects.get(id=multiple_que_id)
-            self.exam_obj = Exam.objects.get(id=self.multipleQue_obj.examID)
+            self.exam_obj = Exam.objects.get(id=self.multipleQue_obj.examID.id)
         else:
             self.multipleQue_obj = None
 

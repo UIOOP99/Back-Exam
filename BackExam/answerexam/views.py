@@ -10,6 +10,7 @@ from .models import DescriptiveAnswer, MultipleAnswer
 from client_process.file_management import retrieve_file
 
 
+
 class DescriptiveAnswerViewSet(ModelViewSet):
     serializer_class = DescriptiveAnswerSerializer
     permission_classes = [IsAuthenticated, ]
@@ -20,6 +21,10 @@ class DescriptiveAnswerViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
+        # # _mutable = request.data._mutable
+        # request.data._mutable = True
+        # request.data['studentID'] = request.user.id
+        # # request.data._mutable = _mutable
         serializer = self.get_serializer(data=request.data, descriptive_que_id=request.data['descriptive_questionID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -71,6 +76,9 @@ class MultipleAnswerViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
+        # _mutable = request.data._mutable
+        # request.data['studentID'] = request.user.id
+        # request.data._mutable = _mutable
         serializer = self.get_serializer(data=request.data,
                                          multiple_que_id=request.data['multiple_questionID']
                                          )
