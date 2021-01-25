@@ -131,5 +131,5 @@ def answers_list2(request, examID):
                                                                        'studentID', 'created_date')
         result_list = list(chain(a1, a2))
         return Response(data={'list': result_list}, status=status.HTTP_200_OK)
-    except Exam.DoesNotExist or User.DoesNotExist:
+    except:
         return Response(status=status.HTTP_404_NOT_FOUND)

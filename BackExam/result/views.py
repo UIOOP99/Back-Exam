@@ -15,7 +15,7 @@ from .models import Result
 from account.models import User
 from designexam.models import Exam
 from .serializers import ResultSerializer, ResultExamListSerializer, ResultUserListSerializer,\
-     MultiAnswerdetailSerializer, DescriptiveAnswerdetailSerializer, ResultDetailSerializer, Details
+    MultiAnswerdetailSerializer, DescriptiveAnswerdetailSerializer, ResultDetailSerializer, Details
 from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess, HasResultsStudentAccess, HasResultsExamAccess
 from .utility.query import get_users, get_exams, get_mul_answers, get_p_answers
 
@@ -32,10 +32,10 @@ class ResultViewSet(ModelViewSet):
             permission = (IsAuthenticated(), HasCreateAccess(), )
 
         elif self.action == "partial_update" or self.action == "destroy":
-            permission = (IsAuthenticated(), HasUpdateDeleteAccess() )
+            permission = (IsAuthenticated(), HasUpdateDeleteAccess())
 
         elif self.action == "retrieve":
-            permission = (IsAuthenticated(), HasReadAccess() )
+            permission = (IsAuthenticated(), HasReadAccess())
 
         else:
             permission = (IsAuthenticated(), )
@@ -43,10 +43,9 @@ class ResultViewSet(ModelViewSet):
         return permission
 
 
-
 class ResultExamList(ListAPIView):
     serializer_class = ResultExamListSerializer
-    permission_classes = (IsAuthenticated, HasResultsExamAccess(), )
+    permission_classes = (IsAuthenticated, HasResultsExamAccess, )
 
     def list(self, request, *args, **kwargs):
         try:
@@ -54,33 +53,32 @@ class ResultExamList(ListAPIView):
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        users = get_users(exam.id)
+        users = get_users(exam.pk)
         paginator = PageNumberPagination()
         paginator.page_size = 20
         result_page = paginator.paginate_queryset(users, request)
-        users_ser = ResultExamListSerializer(result_page, many=True, exam_id=exam.id)
+        users_ser = ResultExamListSerializer(result_page, context={'exam_id': exam.pk}, many=True)
         return paginator.get_paginated_response(users_ser.data)
 
-           
 
 class ResultStudentList(ListAPIView):
     serializer_class = ResultUserListSerializer
-    permission_classes = (IsAuthenticated, HasResultsStudentAccess(), )
+    permission_classes = (IsAuthenticated, HasResultsStudentAccess, )
 
     def list(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(pk=kwargs['stusent_id'])
-            if usre.role != "STUDENT":
+            user = User.objects.get(pk=kwargs['student_id'])
+            if user.role != "STUDENT":
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        exams = get_exams(user.id)
+        exams = get_exams(user.pk)
         paginator = PageNumberPagination()
         paginator.page_size = 20
         result_page = paginator.paginate_queryset(exams, request)
         exam_ser = ResultUserListSerializer(
-            result_page, many=True, student_id=user.id)
+            result_page, many=True, context={'student_id': user.id})
         return paginator.get_paginated_response(exam_ser.data)
 
 
@@ -90,13 +88,15 @@ class ResultDetailList(ListAPIView):
 
     def list(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(pk=kwargs['stusent_id'])
+            user = User.objects.get(pk=kwargs['student_id'])
             exam = Exam.objects.get(pk=kwargs['exam_id'])
-            if usre.role != "STUDENT":
+            if user.role != "STUDENT":
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception as e:
+            print(str(e))
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        Details(get_mul_answers(exam.id, user.id), get_p_answers(exam.id, user.id))
+        Details(get_mul_answers(exam.pk, user.pk),
+                get_p_answers(exam.pk, user.pk))
         ser = ResultDetailSerializer(Details)
         return Response(data=ser.data, status=status.HTTP_200_OK)
