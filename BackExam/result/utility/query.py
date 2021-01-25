@@ -11,7 +11,8 @@ def get_users(exam_id):
     users = User.objects.filter(pk__in=users_id)
     users = list(users)
     questions = MultipleQuestion.objects.filter(examID__pk=exam_id)
-    users += list(MultipleAnswer.objects.filter(multiple_questionID__in=questions).values_list('studentID', flat=True))
+    users_id = MultipleAnswer.objects.filter(multiple_questionID__in=questions).values_list('studentID', flat=True)
+    users += list(User.objects.filter(pk__in=users_id))
     
     return list(set(users))
 
