@@ -123,12 +123,3 @@ class MultipleAnswerSerializer(serializers.ModelSerializer):
 
         return attr
 
-
-class MultipleAnswerReadSerializer(serializers.ModelSerializer):
-    #multiple_questionID = 
-    result = serializers.SerializerMethodField()
-    serializers.DjangoModelField
-    class Meta:
-        model = MultipleAnswer
-        fields = '__all__'
-
