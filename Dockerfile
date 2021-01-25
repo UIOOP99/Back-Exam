@@ -14,8 +14,8 @@ RUN mkdir -p /opt/app/pip_cache
 RUN mkdir -p /opt/app/ui
 RUN mkdir -p /opt/app/Back-Exam
 COPY requirements.txt start-server.sh /opt/app/
-COPY Back-Exam /opt/app/Back-Exam/
-COPY ui /opt/app/ui/
+COPY BackExam /opt/app/Back-Exam/
+#COPY ui /opt/app/ui/
 
 # change wordkdir
 WORKDIR /opt/app
