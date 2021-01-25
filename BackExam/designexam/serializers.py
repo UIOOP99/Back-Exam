@@ -1,5 +1,6 @@
 from rest_framework import serializers
 import datetime
+import ast
 from client_process.file_management import create_file
 from client_process.get_classes import is_exist
 from django.utils import timezone
@@ -171,12 +172,25 @@ class MultipleQuestionSerializer(serializers.ModelSerializer):
         if len(mul2) != 0 or len(des2) != 0:
             raise serializers.ValidationError("the question number is a duplicate")
         return value
+
     # def validate_examID(self, value):
     #     try:
     #         exam = Exam.objects.filter(examID=value)
     #     except:
     #         raise serializers.ValidationError("the exam does not exist")
 
+    def to_internal_value(self, data):
+        try:
+            data['options_text'] = str(data['options_text'])
+        except Exception as e:
+            print(str(e))
+            raise serializers.ValidationError()
+        return super().to_internal_value(data)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['options_text'] = ast.literal_eval(ret['options_text'])
+        return ret
 
 class DescriptiveQuestionFileSerializer(serializers.Serializer):
     question_file = serializers.FileField(write_only=True, allow_null=True)
