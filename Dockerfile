@@ -14,7 +14,6 @@ RUN mkdir -p /opt/app/pip_cache
 RUN mkdir -p /opt/app/ui
 RUN mkdir -p /opt/app/Back-Exam
 COPY requirements.txt start-server.sh /opt/app/
-COPY pip_cache /opt/app/pip_cache/
 COPY Back-Exam /opt/app/Back-Exam/
 COPY ui /opt/app/ui/
 
@@ -23,7 +22,7 @@ WORKDIR /opt/app
 
 #venv
 RUN python -m venv venv
-RUN venv/bin/pip install -r requirements.txt --cache-dir pip_cache
+RUN venv/bin/pip install -r requirements.txt
 COPY django_grpc_framework venv/lib/python3.7/site-packages/
 RUN chown -R www-data:www-data ui Back-Exam
 
