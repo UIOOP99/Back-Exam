@@ -1,0 +1,5 @@
+*.zip
+*.bat
+Dockerfile11
+venv
+ui2

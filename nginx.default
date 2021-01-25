@@ -1,0 +1,24 @@
+# nginx.default
+
+server {
+    listen 8020;
+    server_name localhost;
+
+    location /exam/ {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://unix:/opt/app/Back-Exam/BackExam/exam.sock;
+    }
+	 location /ui/ {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://unix:/opt/app/ui/ui_services/ui.sock;
+    }
+	
+    location /exam/static/ {
+        root /opt/app/Back-Exam;
+    }
+	location /ui/static/ {
+        root /opt/app/ui;
+    }
+}
