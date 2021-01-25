@@ -1,5 +1,6 @@
 from rest_framework import serializers
 import datetime
+import ast
 from client_process.file_management import create_file
 from client_process.get_classes import is_exist
 from django.utils import timezone
@@ -137,12 +138,16 @@ class DescriptiveQuestionSerializer(serializers.ModelSerializer):
         model = DescriptiveQuestion
         fields = '__all__'
 
-    # def validate_number(self, value):
-    #     try:
-    #         des = DescriptiveQuestion.objects.filter(number=value)
-    #         raise serializers.ValidationError("the question number is a duplicate")
-    #     except:
-    #         pass
+    def __init__(self, examID=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exam = Exam.objects.get(id=examID)
+
+    def validate_number(self, value):
+        des2 = DescriptiveQuestion.objects.filter(number=value, examID=self.exam)
+        mul2 = MultipleQuestion.objects.filter(number=value, examID=self.exam)
+        if len(mul2) != 0 or len(des2) != 0:
+            raise serializers.ValidationError("the question number is a duplicate")
+        return value
 
     # def validate_examID(self, value):
     #     try:
@@ -157,26 +162,42 @@ class MultipleQuestionSerializer(serializers.ModelSerializer):
         model = MultipleQuestion
         fields = '__all__'
 
-    # def validate_number(self, value):
-    #     try:
-    #         mul = MultipleQuestion.objects.filter(number=value)
-    #         raise serializers.ValidationError("the question number is duplicate")
-    #     except:
-    #         pass
-    #
+    def __init__(self, examID=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exam = Exam.objects.get(id=examID)
+
+    def validate_number(self, value):
+        des2 = DescriptiveQuestion.objects.filter(number=value, examID=self.exam)
+        mul2 = MultipleQuestion.objects.filter(number=value,  examID=self.exam)
+        if len(mul2) != 0 or len(des2) != 0:
+            raise serializers.ValidationError("the question number is a duplicate")
+        return value
+
     # def validate_examID(self, value):
     #     try:
     #         exam = Exam.objects.filter(examID=value)
     #     except:
     #         raise serializers.ValidationError("the exam does not exist")
 
+    def to_internal_value(self, data):
+        try:
+            data['options_text'] = str(data['options_text'])
+        except Exception as e:
+            print(str(e))
+            raise serializers.ValidationError()
+        return super().to_internal_value(data)
 
-class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['options_text'] = ast.literal_eval(ret['options_text'])
+        return ret
+
+class DescriptiveQuestionFileSerializer(serializers.Serializer):
     question_file = serializers.FileField(write_only=True, allow_null=True)
 
-    class Meta:
-        model = DescriptiveQuestionFile
-        fields = '__all__'
+    # class Meta:
+    #     model = DescriptiveQuestionFile
+    #     fields = []
 
     def __init__(self, descriptive_que_id=None, *args, **kwargs):
 
@@ -197,7 +218,7 @@ class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
         if file.size > 10485760:
             raise serializers.ValidationError("the size of file is above of 10 MB")
 
-        if Exam.objects.filter(examID=self.descriptiveQue_obj.examID).setting:
+        if Exam.objects.get(pk=self.descriptiveQue_obj.examID.id).setting:
             raise serializers.ValidationError("this exam has a file containing all the questions")
 
         self.file = file
@@ -207,18 +228,18 @@ class DescriptiveQuestionFileSerializer(serializers.ModelSerializer):
         return create_file(self.file)
 
     def create(self, validated_data):
-        quefile = DescriptiveQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
+        quefile = DescriptiveQuestionFile.objects.create(descriptive_questionID=self.descriptiveQue_obj,
                                                          file_id=self.save_file())
         return quefile.id
 
 
-class MultipleQuestionFileSerializer(serializers.ModelSerializer):
+class MultipleQuestionFileSerializer(serializers.Serializer):
 
     question_file = serializers.FileField(write_only=True, allow_null=True)
 
-    class Meta:
-        model = MultipleQuestionFile
-        fields = '__all__'
+    # class Meta:
+    #     model = MultipleQuestionFile
+    #     fields = []
 
     def __init__(self, multiple_que_id=None, *args, **kwargs):
 
@@ -239,7 +260,7 @@ class MultipleQuestionFileSerializer(serializers.ModelSerializer):
         if file.size > 10485760:
             raise serializers.ValidationError("the size of file is above of 10 MB")
 
-        if Exam.objects.filter(examID=self.multipleQue_obj.examID).setting:
+        if Exam.objects.get(pk=self.multipleQue_obj.examID.id).setting:
             raise serializers.ValidationError("this exam has a file containing all the questions")
 
         self.file = file
@@ -249,18 +270,18 @@ class MultipleQuestionFileSerializer(serializers.ModelSerializer):
         return create_file(self.file)
 
     def create(self, validated_data):
-        quefile = MultipleQuestionFile.objects.create(descriptive_questionID=validated_data["descriptive_questionID"],
+        quefile = MultipleQuestionFile.objects.create(multiple_questionID=self.multipleQue_obj,
                                                       file_id=self.save_file())
         return quefile.id
 
 
-class DescriptiveQuestionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DescriptiveQuestion
-        fields = '__all__'
-
-
-class MultipleQuestionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MultipleQuestion
-        fields = '__all__'
+# class DescriptiveQuestionListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = DescriptiveQuestion
+#         fields = '__all__'
+#
+#
+# class MultipleQuestionListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = MultipleQuestion
+#         fields = '__all__'

@@ -10,14 +10,16 @@ from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from operator import attrgetter
+from itertools import chain
 
 from .models import Exam, DescriptiveQuestion, MultipleQuestion,\
     DescriptiveQuestionFile, MultipleQuestionFile
 from account.models import User
 from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer,\
     DescriptiveQuestionSerializer, DescriptiveQuestionFileSerializer,\
-    MultipleQuestionSerializer, MultipleQuestionFileSerializer,\
-    MultipleQuestionListSerializer, DescriptiveQuestionListSerializer
+    MultipleQuestionSerializer, MultipleQuestionFileSerializer
+    # MultipleQuestionListSerializer, DescriptiveQuestionListSerializer
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
     HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
 from client_process.file_management import delete_file, retrieve_file
@@ -163,7 +165,11 @@ class DescriptiveQuestionViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        try:
+            exam = Exam.objects.get(pk=request.data['examID'])
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(data=request.data, examID=request.data['examID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -185,7 +191,7 @@ class DescriptiveQuestionViewSet(ModelViewSet):
         file_serializer = DescriptiveQuestionFileSerializer(data=request.data,
                                                             descriptive_que_id=pk)
         if file_serializer.is_valid():
-            file_serializer.create()
+            file_serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -217,7 +223,11 @@ class MultipleQuestionViewSet(ModelViewSet):
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        try:
+            exam = Exam.objects.get(pk=request.data['examID'])
+        except Exam.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(data=request.data, examID=request.data['examID'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -260,7 +270,15 @@ class MultipleQuestionViewSet(ModelViewSet):
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def  questions_list(request, pk):
+    q1 = MultipleQuestion.objects.filter(examID=pk).values('pk', 'examID', 'text', 'mark', 'number', 'answer', 'options_text')
+    q2 = DescriptiveQuestion.objects.filter(examID=pk).values('pk', 'examID', 'text', 'mark', 'number', 'setting')
+    result_list = list(chain(q1, q2))
+    return Response(data={'list': result_list}, status=status.HTTP_200_OK)
 
+''''
 class DescriptiveQuestions(ListAPIView):
     serializer_class = DescriptiveQuestionListSerializer
     permission_classes = (IsAuthenticated, )
@@ -295,3 +313,5 @@ class MultipleQuestions(ListAPIView):
             return paginator.get_paginated_response(mulques_ser.data)
         except Exam.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+'''''
