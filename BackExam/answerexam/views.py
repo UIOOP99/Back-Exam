@@ -12,6 +12,9 @@ from client_process.file_management import retrieve_file
 # from operator import attrgetter
 from itertools import chain
 from account.models import User
+from .permissions import IsOwnerToCreateDescriptiveQueAns,IsOwnerToCreateMultipleQueAns,\
+    HasAccessToReadAnswers, IsOwnerToCreateFile
+
 
 class DescriptiveAnswerViewSet(ModelViewSet):
     serializer_class = DescriptiveAnswerSerializer
@@ -20,6 +23,15 @@ class DescriptiveAnswerViewSet(ModelViewSet):
     http_method_names = ['get', 'post']
 
     # PERMISSIONS SHOULD BE WRITEN
+    def get_permissions(self):
+        if self.action == "create":
+            permission = (IsAuthenticated(), IsOwnerToCreateDescriptiveQueAns(),)
+
+        elif self.action == "create_file":
+            permission = (IsAuthenticated(), IsOwnerToCreateFile())
+        else:
+            permission = (IsAuthenticated(),)
+        return permission
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
@@ -75,6 +87,13 @@ class MultipleAnswerViewSet(ModelViewSet):
     http_method_names = ['post']
 
     # PERMISSIONS SHOULD BE WRITEN
+    def get_permissions(self):
+        if self.action == "create":
+            permission = (IsAuthenticated(), IsOwnerToCreateMultipleQueAns(),)
+        else:
+            permission = (IsAuthenticated(),)
+
+        return permission
 
     # swagger should be added
     def create(self, request, *args, **kwargs):
@@ -98,7 +117,7 @@ class MultipleAnswerViewSet(ModelViewSet):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated,HasAccessToReadAnswers ))
 def answers_list(request, examID, studentID):
     try:
         exam = Exam.objects.get(pk=examID)
@@ -118,7 +137,7 @@ def answers_list(request, examID, studentID):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated,HasAccessToReadAnswers ))
 def answers_list2(request, examID):
     try:
         exam = Exam.objects.get(pk=examID)

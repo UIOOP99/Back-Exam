@@ -91,7 +91,7 @@ class HasAccessToReadExam(permissions.BasePermission):
             exam = Exam.objects.get(pk=view.kwargs['pk'])
         except Exam.DoesNotExist:
             return False
-        
+
         if request.user.role == "ADMIN":
             return True
         else:
@@ -130,9 +130,3 @@ class ReachTimeToReadExam(permissions.BasePermission):
         return True
 
 
-
-        
-
-
-        
-        
