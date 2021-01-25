@@ -11,7 +11,7 @@ class IsOwnerToCreateMultipleQueAns(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             exam = MultipleQuestion.objects.get(pk=request.data['multiple_questionID']).examID
-            if request.user.role == "STUDENT" and exam.end_date < timezone.now():
+            if request.user.role == "STUDENT" and exam.end_date > timezone.now():
                 classes = get_classes(request.user.id)
                 course_id = exam.courseID
                 if course_id not in classes:
@@ -28,7 +28,7 @@ class IsOwnerToCreateDescriptiveQueAns(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             exam = DescriptiveQuestion.objects.get(pk=request.data['descriptive_questionID']).examID
-            if request.user.role == "STUDENT" and exam.end_date < timezone.now():
+            if request.user.role == "STUDENT" and exam.end_date > timezone.now():
                 classes = get_classes(request.user.id)
                 course_id = exam.courseID
                 if course_id not in classes:
@@ -62,7 +62,7 @@ class HasAccessToReadAnswers(permissions.BasePermission):
 class IsOwnerToCreateFile(permissions.BasePermission):
     def has_permission(self, request, view):
         exam = DescriptiveQuestion.objects.get(pk=view.kwargs['pk']).examID
-        if request.user.role == "STUDENT" and exam.end_date < timezone.now():
+        if request.user.role == "STUDENT" and exam.end_date > timezone.now():
             classes = get_classes(request.user.id)
             course_id = exam.courseID
             if course_id not in classes:
