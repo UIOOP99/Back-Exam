@@ -41,7 +41,7 @@ class IsOwnerToCreateDescriptiveQueAns(permissions.BasePermission):
             return False
 
 
- class HasAccessToReadAnswers(permissions.BasePermission):
+class HasAccessToReadAnswers(permissions.BasePermission):
 
     def has_permission(self, request, view):
         try:
