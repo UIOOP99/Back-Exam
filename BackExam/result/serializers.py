@@ -56,12 +56,11 @@ class MultiAnswerdetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MultipleAnswer
-        fields = ('id', 'multiple_questionID',
-                  'studentID', 'answer_choice', 'created_date', 'result')
+        fields = ('id', 'multiple_questionID','studentID', 'answer_choice', 'created_date', 'result')
 
     def set_result(self, obj):
         try:
-            result = Result.objects.get(obj.id, "Multiple")
+            result = Result.objects.get(answer_id=obj.id, question_type="Multiple")
             ser = ResultSerializer(result)
             return ser.data
         except:
@@ -73,25 +72,19 @@ class DescriptiveAnswerdetailSerializer(serializers.ModelSerializer):
     descriptive_questionID = DescriptiveQuestionListSerializer(read_only=True)
 
     class Meta:
-        model = MultipleAnswer
-        fields = ('id', 'descriptive_questionID',
-                  'studentID', 'file_id', 'text', 'created_date', 'result')
+        model = DescriptiveAnswer
+        fields = ('id', 'descriptive_questionID', 'studentID', 'file_id', 'text', 'created_date', 'result')
 
     def set_result(self, obj):
         try:
-            result = Result.objects.get(obj.id, "Descriptive")
+            result = Result.objects.get(answer_id=obj.id, question_type="Descriptive")
             ser = ResultSerializer(result)
             return ser.data
         except:
             return {}
 
 
-class Details:
-    def __init__(self, multiple, descriptive):
-        self.descriptive = descriptive
-        self.multiple = multiple
-
-
 class ResultDetailSerializer(serializers.Serializer):
     multiple = MultiAnswerdetailSerializer(many=True)
     descriptive = DescriptiveAnswerdetailSerializer(many=True)
+

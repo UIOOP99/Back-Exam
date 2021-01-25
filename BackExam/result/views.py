@@ -15,9 +15,9 @@ from .models import Result
 from account.models import User
 from designexam.models import Exam
 from .serializers import ResultSerializer, ResultExamListSerializer, ResultUserListSerializer,\
-    MultiAnswerdetailSerializer, DescriptiveAnswerdetailSerializer, ResultDetailSerializer, Details
+    MultiAnswerdetailSerializer, DescriptiveAnswerdetailSerializer, ResultDetailSerializer
 from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess, HasResultsStudentAccess, HasResultsExamAccess
-from .utility.query import get_users, get_exams, get_mul_answers, get_p_answers
+from .utility.query import get_users, get_exams, get_mul_answers, get_d_answers
 
 
 class ResultViewSet(ModelViewSet):
@@ -96,7 +96,8 @@ class ResultDetailList(ListAPIView):
             print(str(e))
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        Details(get_mul_answers(exam.pk, user.pk),
-                get_p_answers(exam.pk, user.pk))
-        ser = ResultDetailSerializer(Details)
-        return Response(data=ser.data, status=status.HTTP_200_OK)
+        # Details(get_mul_answers(exam.pk, user.pk),
+        #         get_p_answers(exam.pk, user.pk))
+        ser_m = MultiAnswerdetailSerializer(get_mul_answers(exam.pk, user.pk), many=True)
+        ser_d = DescriptiveAnswerdetailSerializer(get_d_answers(exam.pk, user.pk), many=True)
+        return Response(data={'multiple': ser_m.data, 'descriptive': ser_d.data}, status=status.HTTP_200_OK)
