@@ -21,7 +21,8 @@ from .serializers import ExamSerializer, ExamFileSerializer, ExamListSerializer,
     MultipleQuestionSerializer, MultipleQuestionFileSerializer
     # MultipleQuestionListSerializer, DescriptiveQuestionListSerializer
 from .permisions import IsOwnerToCreate, IsOwnerToEditDelete, HasAccessToDelete, HasAccessToEdit, \
-    HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams
+    HasAccessToReadExam, HasTimeToEditDelete, ReachTimeToReadExam, HasAccessToReadExams,\
+    IsOwnerToCreateQue, HasAccessToReadQues, IsOwnerToCreateFile
 from client_process.file_management import delete_file, retrieve_file
 from client_process.get_classes import is_exist
 from .exam_extra_classes.exam_list import ExamList, CourseExamList
@@ -162,7 +163,15 @@ class DescriptiveQuestionViewSet(ModelViewSet):
     http_method_names = ['get', 'post']
 
     # PERMISSIONS SHOULD BE WRITEN
+    def get_permissions(self):
+        if self.action == "create":
+            permission = (IsAuthenticated(), IsOwnerToCreateQue(),)
 
+        elif self.action == "create_file":
+            permission = (IsAuthenticated(), IsOwnerToCreateFile())
+        else:
+            permission = (IsAuthenticated(),)
+        return permission
     # swagger should be added
     def create(self, request, *args, **kwargs):
         try:
@@ -220,7 +229,15 @@ class MultipleQuestionViewSet(ModelViewSet):
     http_method_names = ['get', 'post']
 
     # PERMISSIONS SHOULD BE WRITEN
+    def get_permissions(self):
+        if self.action == "create":
+            permission = (IsAuthenticated(), IsOwnerToCreateQue(),)
 
+        elif self.action == "create_file":
+            permission = (IsAuthenticated(), IsOwnerToCreateFile())
+        else:
+            permission = (IsAuthenticated(),)
+        return permission
     # swagger should be added
     def create(self, request, *args, **kwargs):
         try:
@@ -271,7 +288,7 @@ class MultipleQuestionViewSet(ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated,HasAccessToReadQues ))
 def  questions_list(request, pk):
     q1 = MultipleQuestion.objects.filter(examID=pk).values('pk', 'examID', 'text', 'mark', 'number', 'answer', 'options_text')
     q2 = DescriptiveQuestion.objects.filter(examID=pk).values('pk', 'examID', 'text', 'mark', 'number', 'setting')
