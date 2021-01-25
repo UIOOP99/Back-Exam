@@ -15,5 +15,17 @@ def get_users(exam_id):
 
 def get_exams(user_id):
     courses = get_classes(user_id)
-    exams = Exam.objects.filter(courseID__in=courses)
+    exams = Exam.objects.filter(courseID__in=courses).order_by('-start_date')
     return exams
+
+
+def get_mul_answers(exam_id, user_id):
+    questions = DescriptiveQuestion.objects.filter(examID__pk=exam_id).values_list('id', flat=True)
+    answers = DescriptiveAnswer.objects.filter(descriptive_questionID__pk__in=questions, studentID__id=user_id)
+    return answers
+
+
+def get_p_answers(exam_id, user_id):
+    questions = MultipleQuestion.objects.filter(examID__pk=exam_id).values_list('id', flat=True)
+    answers = MultipleAnswer.objects.filter(multiple_questionID__pk__in=questions, studentID__id=user_id)
+    return answers

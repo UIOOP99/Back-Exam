@@ -32,7 +32,7 @@ class HasUpdateDeleteAccess(permissions.BasePermission):
         except Result.DoesNotExist:
             return False
 
-        elif request.user.role == 'PROFESSOR':
+        if request.user.role == 'PROFESSOR':
             exam = get_exam_obj(result.answer_id, result.question_type)
             if exam is None:
                 return False
@@ -82,7 +82,7 @@ class HasResultsExamAccess(permissions.BasePermission):
         except Exam.DoesNotExist:
             return False
 
-        elif request.user.role == 'PROFESSOR':
+        if request.user.role == 'PROFESSOR':
             courses = get_classes(request.user.id)
             if exam.courseID not in courses:
                 return False
@@ -98,11 +98,29 @@ class HasResultsStudentAccess(permissions.BasePermission):
             return False
         
         elif request.user.role == "STUDENT":
-            if request.user.id != view.kwargs['student_id']
+            if request.user.id != view.kwargs['student_id']:
                 return False
 
         return True
         
 
+class HasReadDetailAccess(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        try:
+            exam = Exam.objects.get(pk=view.kwargs['exam_id'])
+        except Exam.DoesNotExist:
+            return False
+
+        if request.user.role == "STUDENT":
+            if request.user.id != view.kwargs['student_id']:
+                return False
+
+        elif request.user.role == 'PROFESSOR':
+            courses = get_classes(request.user.id)
+            if exam.courseID not in courses:
+                return False
+
+        return True
 
 

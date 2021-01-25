@@ -14,9 +14,10 @@ from drf_yasg import openapi
 from .models import Result
 from account.models import User
 from designexam.models import Exam
-from .serializers import ResultSerializer, ResultExamListSerializer, ResultUserListSerializer
+from .serializers import ResultSerializer, ResultExamListSerializer, ResultUserListSerializer,\
+     MultiAnswerdetailSerializer, DescriptiveAnswerdetailSerializer, ResultDetailSerializer, Details
 from .permissions import HasCreateAccess, HasUpdateDeleteAccess, HasReadAccess, HasResultsStudentAccess, HasResultsExamAccess
-from .utility.query import get_users, get_exams
+from .utility.query import get_users, get_exams, get_mul_answers, get_p_answers
 
 
 class ResultViewSet(ModelViewSet):
@@ -48,12 +49,10 @@ class ResultExamList(ListAPIView):
     permission_classes = (IsAuthenticated, HasResultsExamAccess(), )
 
     def list(self, request, *args, **kwargs):
-        if not is_exist(kwargs['exam_id']):
-            return Response(status=status.HTTP_404_NOT_FOUND)
         try:
             exam = Exam.objects.get(pk=kwargs['exam_id'])
         except Exam.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         users = get_users(exam.id)
         paginator = PageNumberPagination()
@@ -69,14 +68,12 @@ class ResultStudentList(ListAPIView):
     permission_classes = (IsAuthenticated, HasResultsStudentAccess(), )
 
     def list(self, request, *args, **kwargs):
-        if not is_exist(kwargs['student_id']):
-            return Response(status=status.HTTP_404_NOT_FOUND)
         try:
             user = User.objects.get(pk=kwargs['stusent_id'])
             if usre.role != "STUDENT":
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         exams = get_exams(user.id)
         paginator = PageNumberPagination()
@@ -87,3 +84,19 @@ class ResultStudentList(ListAPIView):
         return paginator.get_paginated_response(exam_ser.data)
 
 
+class ResultDetailList(ListAPIView):
+    serializer_class = ResultDetailSerializer()
+    permission_classes = (IsAuthenticated, )
+
+    def list(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(pk=kwargs['stusent_id'])
+            exam = Exam.objects.get(pk=kwargs['exam_id'])
+            if usre.role != "STUDENT":
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        Details(get_mul_answers(exam.id, user.id), get_p_answers(exam.id, user.id))
+        ser = ResultDetailSerializer(Details)
+        return Response(data=ser.data, status=status.HTTP_200_OK)
