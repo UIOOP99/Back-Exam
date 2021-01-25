@@ -22,7 +22,7 @@ class DescriptiveFileSerializer(serializers.Serializer):
             self.descriptiveQue_obj= None
 
     def validate_answer_file(self, value):
-        if self.descriptiveQue_obj or self.descriptiveAnswer_obj is None:
+        if self.descriptiveQue_obj is None or self.descriptiveAnswer_obj is None:
             raise serializers.ValidationError()
 
         if self.no_file():
@@ -39,7 +39,7 @@ class DescriptiveFileSerializer(serializers.Serializer):
         return file
 
     def no_file(self):
-        if DescriptiveQuestion.objects.get(descriptive_questionID=self.descriptiveQue_obj).setting is False:
+        if self.descriptiveQue_obj.setting is False:
             return True
         return False
 

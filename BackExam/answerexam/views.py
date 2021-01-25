@@ -24,7 +24,7 @@ class DescriptiveAnswerViewSet(ModelViewSet):
     # swagger should be added
     def create(self, request, *args, **kwargs):
         try:
-            des_que = DescriptiveQuestion.objects.get(pk=request.data['multiple_questionID'])
+            des_que = DescriptiveQuestion.objects.get(pk=request.data['descriptive_questionID'])
         except DescriptiveQuestion.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(data=request.data, descriptive_que_id=request.data['descriptive_questionID'])
@@ -48,7 +48,7 @@ class DescriptiveAnswerViewSet(ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         file_serializer = DescriptiveFileSerializer(data=request.data,
                                                     descriptive_answer_id=pk,
-                                                    descriptive_que_id=request.data['descriptive_questionID']
+                                                    descriptive_que_id=des_answer.descriptive_questionID.pk
                                                     )
         if file_serializer.is_valid():
             file_serializer.update_instance()
