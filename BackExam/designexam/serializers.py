@@ -140,7 +140,10 @@ class DescriptiveQuestionSerializer(serializers.ModelSerializer):
 
     def __init__(self, examID=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.exam = Exam.objects.get(id=examID)
+        try:
+            self.exam = Exam.objects.get(id=examID)
+        except:
+            self.exam = None
 
     def validate_number(self, value):
         des2 = DescriptiveQuestion.objects.filter(number=value, examID=self.exam)
@@ -164,7 +167,10 @@ class MultipleQuestionSerializer(serializers.ModelSerializer):
 
     def __init__(self, examID=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.exam = Exam.objects.get(id=examID)
+        try:
+            self.exam = Exam.objects.get(id=examID)
+        except:
+            self.exam = None
 
     def validate_number(self, value):
         des2 = DescriptiveQuestion.objects.filter(number=value, examID=self.exam)

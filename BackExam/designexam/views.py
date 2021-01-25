@@ -172,7 +172,8 @@ class DescriptiveQuestionViewSet(ModelViewSet):
         else:
             permission = (IsAuthenticated(),)
         return permission
-    # swagger should be added
+
+    @swagger_auto_schema(request_body=DescriptiveQuestionSerializer)
     def create(self, request, *args, **kwargs):
         try:
             exam = Exam.objects.get(pk=request.data['examID'])
@@ -184,13 +185,12 @@ class DescriptiveQuestionViewSet(ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    # swagger should be added
     def perform_create(self, serializer):
         des_question = serializer.save()
         des_question.save()
         # serializer.save()
 
-    # swagger should be added
+    @swagger_auto_schema(request_body=DescriptiveQuestionFileSerializer)
     @action(detail=True, methods=['post'])
     def create_file(self, request, pk):
         try:
@@ -204,7 +204,7 @@ class DescriptiveQuestionViewSet(ModelViewSet):
             return Response(status=status.HTTP_201_CREATED)
         return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # swagger should be added
+    @swagger_auto_schema(responses={status.HTTP_200_OK: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'url': openapi.Schema(type=openapi.TYPE_STRING)})})
     @action(detail=True, methods=['get'])
     def get_file_url(self, request, pk):
         try:
@@ -238,7 +238,8 @@ class MultipleQuestionViewSet(ModelViewSet):
         else:
             permission = (IsAuthenticated(),)
         return permission
-    # swagger should be added
+
+    @swagger_auto_schema(request_body=MultipleQuestionSerializer)
     def create(self, request, *args, **kwargs):
         try:
             exam = Exam.objects.get(pk=request.data['examID'])
@@ -250,13 +251,12 @@ class MultipleQuestionViewSet(ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    # swagger should be added
     def perform_create(self, serializer):
         mul_question = serializer.save()
         mul_question.save()
         # serializer.save()
 
-    # swagger should be added
+    @swagger_auto_schema(request_body=MultipleQuestionFileSerializer)
     @action(detail=True, methods=['post'])
     def create_file(self, request, pk):
         try:
@@ -270,7 +270,7 @@ class MultipleQuestionViewSet(ModelViewSet):
             return Response(status=status.HTTP_201_CREATED)
         return Response(data=file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # swagger should be added
+    @swagger_auto_schema(responses={status.HTTP_200_OK: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'url': openapi.Schema(type=openapi.TYPE_STRING)})})
     @action(detail=True, methods=['get'])
     def get_file_url(self, request, pk):
         try:
