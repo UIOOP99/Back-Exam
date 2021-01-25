@@ -55,7 +55,7 @@ class DescriptiveFileSerializer(serializers.Serializer):
 class DescriptiveAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = DescriptiveAnswer
-        fields = ('text', 'studentID', 'descriptive_questionID', 'created_date')
+        fields = ('id', 'text', 'studentID', 'descriptive_questionID', 'created_date')
         read_only_fields = ('created_date',)
 
     def __init__(self, descriptive_que_id=None, *args, **kwargs):
@@ -90,7 +90,7 @@ class DescriptiveAnswerSerializer(serializers.ModelSerializer):
 class MultipleAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MultipleAnswer
-        fields = ('answer_choice', 'studentID', 'multiple_questionID', 'created_date')
+        fields = ('id', 'answer_choice', 'studentID', 'multiple_questionID', 'created_date')
         read_only_fields = ('created_date',)
 
     def __init__(self, multiple_que_id=None, *args, **kwargs):

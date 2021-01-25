@@ -1,5 +1,7 @@
 from django.db import models
+from django.dispatch import receiver
 from designexam.models import MultipleQuestion, DescriptiveQuestion
+from result.utility.auto_correction import AutoCorrection
 from account.models import User
 
 
@@ -13,6 +15,13 @@ class MultipleAnswer(models.Model):  # Students
         index_together = [
             ["multiple_questionID_id"],
         ]
+
+
+@receiver(models.signals.post_save, sender=MultipleAnswer)
+def auto_delete_mult_answer(sender, instance, created, **kwargs):
+    if created:
+        auto_c = AutoCorrection(instance, "Multiple")
+        auto_c.save()
 
 
 class DescriptiveAnswer(models.Model):  # Students
