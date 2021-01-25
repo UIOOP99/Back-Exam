@@ -11,4 +11,6 @@ urlpatterns=[
     path('descriptive-answer/file/<int:pk>/', views.MultipleAnswerViewSet.as_view({
         "post": "create_file",
         "get": "get_file_url"})),
+    path("answers/<int:examID>/<int:studentID>/", views.answers_list),
+    path("answers/<int:examID>/", views.answers_list2),
 ]

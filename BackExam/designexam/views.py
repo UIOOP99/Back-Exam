@@ -273,8 +273,8 @@ class MultipleQuestionViewSet(ModelViewSet):
 @api_view(['GET'])
 @permission_classes((IsAuthenticated, ))
 def  questions_list(request, pk):
-    q1 = MultipleQuestion.objects.filter(examID=pk).values('examID', 'text', 'mark', 'number', 'answer', 'options_text')
-    q2 = DescriptiveQuestion.objects.filter(examID=pk).values('examID', 'text', 'mark', 'number', 'setting')
+    q1 = MultipleQuestion.objects.filter(examID=pk).values('pk', 'examID', 'text', 'mark', 'number', 'answer', 'options_text')
+    q2 = DescriptiveQuestion.objects.filter(examID=pk).values('pk', 'examID', 'text', 'mark', 'number', 'setting')
     result_list = list(chain(q1, q2))
     return Response(data={'list': result_list}, status=status.HTTP_200_OK)
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import status, generics
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet
 from .serializers import DescriptiveAnswerSerializer, MultipleAnswerSerializer, DescriptiveFileSerializer
 from designexam.models import Exam, DescriptiveQuestion, MultipleQuestion
@@ -9,8 +9,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import DescriptiveAnswer, MultipleAnswer
 from client_process.file_management import retrieve_file
-
-
+# from operator import attrgetter
+from itertools import chain
+from account.models import User
 
 class DescriptiveAnswerViewSet(ModelViewSet):
     serializer_class = DescriptiveAnswerSerializer
@@ -94,3 +95,41 @@ class MultipleAnswerViewSet(ModelViewSet):
         answer = serializer.save()
         answer.save()
         serializer.save()
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def answers_list(request, examID, studentID):
+    try:
+        exam = Exam.objects.get(pk=examID)
+        student = User.objects.get(pk=studentID)
+        que_list = DescriptiveQuestion.objects.filter(examID=examID).values_list('id', flat=True)
+        a1 = MultipleAnswer.objects.filter(multiple_questionID__in=que_list, studentID=student).values('pk', 'multiple_questionID',
+                                                                                               'studentID',
+                                                                                               'answer_choice',
+                                                                                               'created_date')
+        a2 = DescriptiveAnswer.objects.filter(descriptive_questionID__in=que_list, studentID=student).values('pk', 'descriptive_questionID',
+                                                                                            'text', 'file_id',
+                                                                                            'studentID', 'created_date')
+        result_list = list(chain(a1, a2))
+        return Response(data={'list': result_list}, status=status.HTTP_200_OK)
+    except Exam.DoesNotExist or User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def answers_list2(request, examID):
+    try:
+        exam = Exam.objects.get(pk=examID)
+        que_list = DescriptiveQuestion.objects.filter(examID=examID).values_list('id', flat=True)
+        a1 = MultipleAnswer.objects.filter(multiple_questionID__in=que_list).values('pk', 'multiple_questionID', 'studentID',
+                                                                          'answer_choice',
+                                                                          'created_date')
+        a2 = DescriptiveAnswer.objects.filter(descriptive_questionID__in=que_list).values('pk', 'descriptive_questionID',
+                                                                       'text', 'file_id',
+                                                                       'studentID', 'created_date')
+        result_list = list(chain(a1, a2))
+        return Response(data={'list': result_list}, status=status.HTTP_200_OK)
+    except Exam.DoesNotExist or User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
